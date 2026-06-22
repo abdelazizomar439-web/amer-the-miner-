@@ -1,0 +1,552 @@
+html,,,
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Amer The Miner</title>
+<style>
+    body{
+    margin:0;
+    overflow:hidden;
+    font-family:Tahoma;
+    background:url("assets/background.png");
+    background-size:cover;
+    background-position:center;
+    user-select:none;
+}
+
+/* ===== HUD ===== */
+
+.hud{
+    position:absolute;
+    left:20px;
+    top:20px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    z-index:20;
+}
+
+.box{
+    width:150px;
+    background:linear-gradient(145deg,#4b2a13,#2d160a);
+    color:white;
+    padding:12px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,.5);
+    transition:.2s;
+}
+
+.box:hover{
+    transform:scale(1.05);
+}
+
+.box span{
+    display:block;
+    font-size:26px;
+    font-weight:bold;
+}
+
+/* ===== الصحة ===== */
+
+.health{
+    position:absolute;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    color:white;
+    z-index:20;
+}
+
+.bar-bg{
+    width:350px;
+    height:28px;
+    background:#222;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 0 10px rgba(0,0,0,.5);
+}
+
+#healthBar{
+    width:100%;
+    height:100%;
+    background:linear-gradient(90deg,limegreen,#00ff99);
+    transition:.2s;
+}
+
+/* ===== العالم ===== */
+
+.world{
+    position:absolute;
+    width:100%;
+    height:500px;
+    bottom:100px;
+}
+
+/* ===== miner ===== */
+
+#miner{
+    position:absolute;
+    left:55%;
+    bottom:20px;
+    width:160px;
+    z-index:1;
+    transition:.1s;
+}
+
+/* حركة الضرب */
+.miner-hit{
+    transform:rotate(-25deg) scale(1.05);
+}
+
+/* ===== rock ===== */
+
+#rock{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:0;
+    width:300px;
+    z-index:2;
+    cursor:pointer;
+    transition:.1s;
+}
+
+.rock-hit{
+    transform:translateX(-50%) scale(.92);
+    filter:brightness(1.3);
+}
+
+/* ===== reward text ===== */
+
+#rewardText{
+    position:absolute;
+    left:50%;
+    bottom:250px;
+    transform:translateX(-50%);
+    font-size:60px;
+    font-weight:bold;
+    opacity:0;
+    z-index:50;
+}
+
+.rewardAnim{
+    animation:floatUp 1.2s forwards;
+}
+
+@keyframes floatUp{
+    0%{opacity:1; transform:translate(-50%,0) scale(1);}
+    100%{opacity:0; transform:translate(-50%,-120px) scale(1.3);}
+}
+
+/* ===== legend ===== */
+
+#legendReward{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:70px;
+    font-weight:bold;
+    color:gold;
+    text-shadow:0 0 20px gold;
+    opacity:0;
+    z-index:100;
+}
+
+.legendShow{
+    animation:legendAnim 2s forwards;
+}
+
+@keyframes legendAnim{
+    0%{opacity:0; transform:translate(-50%,-50%) scale(.5);}
+    30%{opacity:1; transform:translate(-50%,-50%) scale(1.2);}
+    100%{opacity:0; transform:translate(-50%,-50%) scale(1);}
+}
+
+/* ===== زر التكسير ===== */
+
+#mineBtn{
+    position:absolute;
+    left:50%;
+    bottom:20px;
+    transform:translateX(-50%);
+    padding:18px 40px;
+    font-size:22px;
+    border:none;
+    border-radius:15px;
+    background:linear-gradient(145deg,#7b4a22,#5a3418);
+    color:white;
+    cursor:pointer;
+    box-shadow:0 10px 20px rgba(0,0,0,.4);
+}
+
+#mineBtn:hover{
+    transform:translateX(-50%) scale(1.05);
+}
+
+/* ===== shop ===== */
+
+.shop{
+    position:absolute;
+    right:20px;
+    top:120px;
+    width:260px;
+    background:#4b2a13;
+    color:white;
+    padding:18px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.5);
+}
+
+.shop button{
+    width:100%;
+    margin-top:10px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#5dc84f;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    transition:.2s;
+}
+
+.shop button:hover{
+    transform:scale(1.05);
+}
+
+/* ===== particles (جاهز للمستقبل) ===== */
+
+#particles{
+    position:absolute;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+}
+
+/* ===== mobile ===== */
+
+@media(max-width:768px){
+
+    #miner{width:110px; left:5%;}
+    #rock{width:200px;}
+
+    .bar-bg{width:220px;}
+
+    .box{width:110px;}
+
+    .shop{width:180px;}
+}
+</style>
+</head>
+
+<body>
+
+    <!-- HUD -->
+
+    <div class="hud">
+
+        <div class="box">🪨 <span id="stones">0</span><small>الحجارة</small></div>
+        <div class="box">⛏️ <span id="damage">1</span><small>القوة</small></div>
+        <div class="box">👷 <span id="workers">0</span><small>العمال</small></div>
+        <div class="box">⭐ <span id="level">1</span><small>المستوى</small></div>
+
+    </div>
+
+    <!-- الصحة -->
+
+    <div class="health">
+
+        <h2>صحة الصخرة</h2>
+
+        <div class="bar-bg">
+            <div id="healthBar"></div>
+        </div>
+
+        <h3 id="healthText">10 / 10</h3>
+
+    </div>
+
+    <!-- العالم -->
+
+    <div class="world">
+
+        <img src="assets/miner.png" id="miner">
+
+        <img src="assets/rock.png" id="rock">
+
+        <div id="rewardText"></div>
+
+        <div id="legendReward">⭐ LEGEND ⭐</div>
+
+        <div id="particles"></div>
+
+    </div>
+
+    <!-- زر اللعب -->
+
+    <button id="mineBtn">اضغط للتكسير ⛏️</button>
+
+    <!-- المتجر -->
+
+    <div class="shop">
+
+        <h2>المتجر</h2>
+
+        <button id="powerBtn">
+            تطوير القوة<br>
+            <span id="powerCost">50</span>
+        </button>
+
+        <button id="workerBtn">
+            شراء عامل<br>
+            <span id="workerCost">100</span>
+        </button>
+
+    </div>
+
+    <!-- الأصوات (هنضيفها بعدين) -->
+    <audio id="hitSound"></audio>
+    <audio id="breakSound"></audio>
+
+    <script>
+        // ===== المتغيرات الأساسية =====
+
+let stones = 0;
+let damage = 1;
+let workers = 0;
+let level = 1;
+
+let maxHealth = 10;
+let health = maxHealth;
+
+let powerCost = 50;
+let workerCost = 100;
+
+// ===== العناصر =====
+
+const rock = document.getElementById("rock");
+const miner = document.getElementById("miner");
+
+const stonesEl = document.getElementById("stones");
+const damageEl = document.getElementById("damage");
+const workersEl = document.getElementById("workers");
+const levelEl = document.getElementById("level");
+
+const healthBar = document.getElementById("healthBar");
+const healthText = document.getElementById("healthText");
+
+const rewardText = document.getElementById("rewardText");
+const legendReward = document.getElementById("legendReward");
+
+const powerCostEl = document.getElementById("powerCost");
+const workerCostEl = document.getElementById("workerCost");
+
+// ===== تحديث الشاشة =====
+
+function update(){
+
+    stonesEl.innerText = Math.floor(stones);
+    damageEl.innerText = damage;
+    workersEl.innerText = workers;
+    levelEl.innerText = level;
+
+    healthText.innerText =
+        Math.floor(health) + " / " + Math.floor(maxHealth);
+
+    healthBar.style.width =
+        (health / maxHealth) * 100 + "%";
+
+    powerCostEl.innerText = powerCost;
+    workerCostEl.innerText = workerCost;
+
+    saveGame();
+}
+
+// ===== تأثير الرقم =====
+
+function showReward(amount, color){
+
+    rewardText.innerText = "+" + amount;
+    rewardText.style.color = color;
+
+    rewardText.classList.remove("rewardAnim");
+    void rewardText.offsetWidth;
+    rewardText.classList.add("rewardAnim");
+}
+
+// ===== legend =====
+
+function showLegend(){
+
+    legendReward.classList.remove("legendShow");
+    void legendReward.offsetWidth;
+    legendReward.classList.add("legendShow");
+}
+
+// ===== نظام الجائزة =====
+
+function getReward(){
+
+    // ⭐ 1% legendary
+    if(Math.random() < 0.01){
+        showLegend();
+        return {amount:100, color:"gold"};
+    }
+
+    // 🔴 10% كبيرة
+    if(Math.random() < 0.10){
+        return {amount:20, color:"red"};
+    }
+
+    // 🟢 عادية
+    let min = 2 + Math.floor(level / 3);
+    let max = 8 + Math.floor(level / 2);
+
+    let amount =
+        Math.floor(Math.random() * (max - min + 1)) + min;
+
+    return {amount, color:"lime"};
+}
+
+// ===== كسر الصخرة =====
+
+function breakRock(){
+
+    const reward = getReward();
+
+    stones += reward.amount;
+
+    showReward(reward.amount, reward.color);
+
+    level++;
+
+    maxHealth += 5 + Math.floor(level / 3);
+    health = maxHealth;
+
+    update();
+}
+
+// ===== الضرب =====
+
+function hit(){
+
+    // حركة المينر
+    miner.classList.add("miner-hit");
+    setTimeout(() => miner.classList.remove("miner-hit"), 120);
+
+    // حركة الصخرة
+    rock.classList.add("rock-hit");
+    setTimeout(() => rock.classList.remove("rock-hit"), 120);
+
+    // critical hit
+    let finalDamage = damage;
+
+    if(Math.random() < 0.1){
+        finalDamage *= 2;
+        showReward("CRIT!", "gold");
+    }
+
+    health -= finalDamage;
+
+    if(health <= 0){
+        breakRock();
+    }
+
+    update();
+}
+
+// ===== الأحداث =====
+
+rock.onclick = hit;
+document.getElementById("mineBtn").onclick = hit;
+
+// ===== الشراء =====
+
+function buyPower(){
+
+    if(stones >= powerCost){
+        stones -= powerCost;
+        damage++;
+
+        powerCost = Math.floor(powerCost * 1.5);
+
+        update();
+    }
+}
+
+function buyWorker(){
+
+    if(stones >= workerCost){
+        stones -= workerCost;
+        workers++;
+
+        workerCost = Math.floor(workerCost * 1.7);
+
+        update();
+    }
+}
+
+document.getElementById("powerBtn").onclick = buyPower;
+document.getElementById("workerBtn").onclick = buyWorker;
+
+// ===== العمال (Idle income) =====
+
+setInterval(() => {
+
+    stones += workers * (1 + level * 0.05);
+
+    update();
+
+}, 1000);
+
+// ===== الحفظ =====
+
+function saveGame(){
+
+    localStorage.setItem("rockMinerSave", JSON.stringify({
+        stones,
+        damage,
+        workers,
+        level,
+        maxHealth,
+        powerCost,
+        workerCost
+    }));
+}
+
+// ===== التحميل =====
+
+function loadGame(){
+
+    const data = JSON.parse(localStorage.getItem("rockMinerSave"));
+
+    if(data){
+        stones = data.stones || 0;
+        damage = data.damage || 1;
+        workers = data.workers || 0;
+        level = data.level || 1;
+
+        maxHealth = data.maxHealth || 10;
+        powerCost = data.powerCost || 50;
+        workerCost = data.workerCost || 100;
+
+        health = maxHealth;
+    }
+}
+
+// ===== تشغيل اللعبة =====
+
+loadGame();
+update();
+    </script>
+
+</body>
+
+</html>
