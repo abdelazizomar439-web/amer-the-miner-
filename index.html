@@ -1,552 +1,1519 @@
-html,,,
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Amer The Miner - Ultimate Edition</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Tahoma, sans-serif;
+            background: url("assets/background.png") no-repeat center center fixed;
+            background-size: cover;
+            user-select: none;
+            transition: background 0.5s ease;
+            /* لمنع التأثيرات الافتراضية للموبايل عند الضغط المطول */
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
 
-    <title>Amer The Miner</title>
-<style>
-    body{
-    margin:0;
-    overflow:hidden;
-    font-family:Tahoma;
-    background:url("assets/background.png");
-    background-size:cover;
-    background-position:center;
-    user-select:none;
-}
+        /* ===== HUD ===== */
+        .hud {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 20;
+        }
 
-/* ===== HUD ===== */
+        .box {
+            width: 150px;
+            background: linear-gradient(145deg, #4b2a13, #2d160a);
+            color: white;
+            padding: 12px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .5);
+            transition: .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-.hud{
-    position:absolute;
-    left:20px;
-    top:20px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    z-index:20;
-}
+        .box:hover { transform: scale(1.05); }
 
-.box{
-    width:150px;
-    background:linear-gradient(145deg,#4b2a13,#2d160a);
-    color:white;
-    padding:12px;
-    border-radius:15px;
-    text-align:center;
-    box-shadow:0 8px 20px rgba(0,0,0,.5);
-    transition:.2s;
-}
+        .level-box { position: relative; cursor: pointer; }
+        .level-box:hover {
+            transform: scale(1.15);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+        }
 
-.box:hover{
-    transform:scale(1.05);
-}
+        .box span {
+            display: block;
+            font-size: 26px;
+            font-weight: bold;
+        }
 
-.box span{
-    display:block;
-    font-size:26px;
-    font-weight:bold;
-}
+        #activeTitleDisplay {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffcc00;
+            margin-top: 4px;
+            text-shadow: 0 0 5px black;
+        }
 
-/* ===== الصحة ===== */
+        .exp-container {
+            width: 100%;
+            height: 8px;
+            background: #222;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+            opacity: 0;
+            max-height: 0;
+            transition: opacity 0.3s, max-height 0.3s, margin 0.3s;
+        }
 
-.health{
-    position:absolute;
-    top:20px;
-    left:50%;
-    transform:translateX(-50%);
-    text-align:center;
-    color:white;
-    z-index:20;
-}
+        .level-box:hover .exp-container {
+            opacity: 1;
+            max-height: 10px;
+        }
 
-.bar-bg{
-    width:350px;
-    height:28px;
-    background:#222;
-    border-radius:20px;
-    overflow:hidden;
-    box-shadow:0 0 10px rgba(0,0,0,.5);
-}
+        #expBar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #e0a910, #fff200);
+            transition: width 0.2s;
+        }
 
-#healthBar{
-    width:100%;
-    height:100%;
-    background:linear-gradient(90deg,limegreen,#00ff99);
-    transition:.2s;
-}
+        .event-timer-container {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid #7b4a22;
+            color: #ffcc00;
+            font-size: 11px;
+            text-align: center;
+        }
+        .event-mini-bar {
+            width: 100%;
+            height: 6px;
+            background: #222;
+            border-radius: 3px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+        #eventMiniBarFill {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #00e5ff, #2196F3);
+            transition: width 1s linear;
+        }
 
-/* ===== العالم ===== */
+        .worker-toggle-btn {
+            background: linear-gradient(145deg, #27ae60, #1e8449);
+            color: white;
+            border: 1px solid #2ecc71;
+            padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-top: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .worker-toggle-btn.stopped {
+            background: linear-gradient(145deg, #c0392b, #962d22);
+            border-color: #e74c3c;
+        }
 
-.world{
-    position:absolute;
-    width:100%;
-    height:500px;
-    bottom:100px;
-}
+        /* ===== الصحة وعداد الوقت ===== */
+        .health {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: white;
+            z-index: 20;
+        }
 
-/* ===== miner ===== */
+        .bar-bg {
+            width: 350px;
+            height: 28px;
+            background: #222;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+        }
 
-#miner{
-    position:absolute;
-    left:55%;
-    bottom:20px;
-    width:160px;
-    z-index:1;
-    transition:.1s;
-}
+        #healthBar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, limegreen, #00ff99);
+            transition: .2s;
+        }
 
-/* حركة الضرب */
-.miner-hit{
-    transform:rotate(-25deg) scale(1.05);
-}
+        .boss-health-bar { background: linear-gradient(90deg, #ff0000, #990000) !important; }
+        .event-health-bar { background: linear-gradient(90deg, #9b59b6, #e74c3c) !important; }
 
-/* ===== rock ===== */
+        #bossTimer {
+            font-size: 24px;
+            color: #ff3333;
+            font-weight: bold;
+            text-shadow: 0 0 10px black;
+            margin-top: 5px;
+            display: none;
+        }
 
-#rock{
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    bottom:0;
-    width:300px;
-    z-index:2;
-    cursor:pointer;
-    transition:.1s;
-}
+        #eventBanner {
+            background: rgba(155, 89, 182, 0.85);
+            color: gold;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 10px;
+            margin-top: 8px;
+            font-size: 16px;
+            display: none;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            animation: pulseGlow 1s infinite alternate;
+        }
 
-.rock-hit{
-    transform:translateX(-50%) scale(.92);
-    filter:brightness(1.3);
-}
+        .bottom-right-notifier {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid gold;
+            border-radius: 12px;
+            padding: 10px 15px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 100;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+            display: none;
+        }
+        #notifierTimer { color: #ff3333; font-size: 18px; }
 
-/* ===== reward text ===== */
+        /* ===== العالم واللاعب ===== */
+        .world {
+            position: absolute;
+            width: 100%;
+            height: 500px;
+            bottom: 100px;
+        }
 
-#rewardText{
-    position:absolute;
-    left:50%;
-    bottom:250px;
-    transform:translateX(-50%);
-    font-size:60px;
-    font-weight:bold;
-    opacity:0;
-    z-index:50;
-}
+        .miner-container {
+            position: absolute;
+            left: 55%;
+            bottom: 1px;
+            width: 160px;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-.rewardAnim{
-    animation:floatUp 1.2s forwards;
-}
+        .player-name-plate {
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid #7b4a22;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px black;
+            white-space: nowrap;
+        }
 
-@keyframes floatUp{
-    0%{opacity:1; transform:translate(-50%,0) scale(1);}
-    100%{opacity:0; transform:translate(-50%,-120px) scale(1.3);}
-}
+        .admin-name {
+            color: gold !important;
+            border-color: gold !important;
+            box-shadow: 0 0 10px gold;
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            from { box-shadow: 0 0 5px gold; } to { box-shadow: 0 0 15px gold; }
+        }
 
-/* ===== legend ===== */
+        #miner {
+            width: 100%;
+            transition: .1s;
+        }
 
-#legendReward{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    font-size:70px;
-    font-weight:bold;
-    color:gold;
-    text-shadow:0 0 20px gold;
-    opacity:0;
-    z-index:100;
-}
+        .miner-hit { transform: rotate(-25deg) scale(1.05); }
 
-.legendShow{
-    animation:legendAnim 2s forwards;
-}
+        #rock {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0px; 
+            width: 400px;
+            max-height: 400px;
+            object-fit: contain;
+            z-index: 2;
+            cursor: pointer;
+            transition: bottom 0.3s ease, width 0.3s ease, transform 0.1s;
+            /* تسريع التفاعل باللمس */
+            touch-action: manipulation;
+        }
 
-@keyframes legendAnim{
-    0%{opacity:0; transform:translate(-50%,-50%) scale(.5);}
-    30%{opacity:1; transform:translate(-50%,-50%) scale(1.2);}
-    100%{opacity:0; transform:translate(-50%,-50%) scale(1);}
-}
+        .rock-hit {
+            transform: translateX(-50%) scale(.92);
+            filter: brightness(1.3);
+        }
 
-/* ===== زر التكسير ===== */
+        /* ===== الأزرار الجانبية العلوية ===== */
+        .menu-buttons {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 30;
+        }
 
-#mineBtn{
-    position:absolute;
-    left:50%;
-    bottom:20px;
-    transform:translateX(-50%);
-    padding:18px 40px;
-    font-size:22px;
-    border:none;
-    border-radius:15px;
-    background:linear-gradient(145deg,#7b4a22,#5a3418);
-    color:white;
-    cursor:pointer;
-    box-shadow:0 10px 20px rgba(0,0,0,.4);
-}
+        .menu-btn {
+            padding: 12px 18px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(145deg, #4b2a13, #2d160a);
+            color: white;
+            border: 2px solid #7b4a22;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,.4);
+            transition: .2s;
+        }
 
-#mineBtn:hover{
-    transform:translateX(-50%) scale(1.05);
-}
+        .menu-btn:hover { transform: scale(1.05); }
 
-/* ===== shop ===== */
+        #adminBtnToggle {
+            background: linear-gradient(145deg, #da1b1b, #ffd700);
+            color: black;
+            border: 2px solid gold;
+            display: none; 
+        }
 
-.shop{
-    position:absolute;
-    right:20px;
-    top:120px;
-    width:260px;
-    background:#4b2a13;
-    color:white;
-    padding:18px;
-    border-radius:20px;
-    box-shadow:0 10px 25px rgba(0,0,0,.5);
-}
+        /* زر إعادة الضبط الشامل في القائمة الرئيسية */
+        #resetBtnToggle {
+            background: linear-gradient(145deg, #d32f2f, #f44336);
+            border-color: #ffcdd2;
+        }
 
-.shop button{
-    width:100%;
-    margin-top:10px;
-    padding:14px;
-    border:none;
-    border-radius:10px;
-    background:#5dc84f;
-    color:white;
-    cursor:pointer;
-    font-size:16px;
-    transition:.2s;
-}
+        /* ===== النوافذ المنبثقة ===== */
+        .popup-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 365px;
+            max-height: 75vh; 
+            background: linear-gradient(145deg, #4b2a13, #2d160a);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,.7);
+            z-index: 100;
+            display: none;
+            border: 3px solid #7b4a22;
+            overflow-y: auto; 
+            box-sizing: border-box;
+        }
 
-.shop button:hover{
-    transform:scale(1.05);
-}
+        .popup-modal::-webkit-scrollbar { width: 8px; }
+        .popup-modal::-webkit-scrollbar-track { background: #2d160a; border-radius: 10px; }
+        .popup-modal::-webkit-scrollbar-thumb { background: #7b4a22; border-radius: 10px; }
 
-/* ===== particles (جاهز للمستقبل) ===== */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
 
-#particles{
-    position:absolute;
-    width:100%;
-    height:100%;
-    pointer-events:none;
-}
+        .close-btn {
+            background: none;
+            border: none;
+            color: #ff4a4a;
+            font-size: 30px;
+            cursor: pointer;
+        }
 
-/* ===== mobile ===== */
+        .popup-modal button:not(.close-btn) {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: .2s;
+        }
 
-@media(max-width:768px){
+        .shop-btn { background: #5dc84f; display: block; text-align: center; text-decoration: none;}
+        .shop-btn:hover { background: #4eb041; transform: scale(1.02); }
+        .shop-premium-btn { background: linear-gradient(145deg, #00c4ff, #0076a8) !important; }
+        .shop-premium-btn:hover { background: linear-gradient(145deg, #0099cc, #00597f) !important; }
 
-    #miner{width:110px; left:5%;}
-    #rock{width:200px;}
+        .admin-action-btn { background: linear-gradient(90deg, #e74c3c, #c0392b) !important; margin-bottom: 5px; }
 
-    .bar-bg{width:220px;}
+        /* كروت القوائم */
+        .list-card {
+            position: relative;
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #5a3418;
+            text-align: center;
+            transition: 0.2s;
+        }
+        
+        .title-perk-tooltip {
+            display: none;
+            background: #111;
+            color: #00ffcc;
+            font-size: 13px;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 5px;
+            border: 1px dashed #7b4a22;
+            text-align: right;
+            animation: fadeIn 0.3s forwards;
+        }
+        
+        .list-card:hover .title-perk-tooltip { display: block; }
 
-    .box{width:110px;}
+        .ach-progress-container {
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 5px;
+            margin-top: 6px;
+            overflow: hidden;
+            border: 1px solid #555;
+        }
+        .ach-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2196F3, #00e5ff);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .ach-progress-text {
+            font-size: 11px;
+            color: #ffb300;
+            text-align: left;
+            margin-top: 3px;
+            display: block;
+        }
 
-    .shop{width:180px;}
-}
-</style>
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .list-card p { margin: 5px 0; font-size: 14px; color: #ddd; }
+        
+        .action-btn { background: #ff3333; }
+        .action-btn:disabled { background: #555 !important; cursor: not-allowed; opacity: 0.6; }
+
+        .title-equip-btn { background: #2196F3; }
+        .title-equip-btn.equipped { background: #9c27b0 !important; }
+
+        /* ===== الجوائز والأنيميشن ===== */
+        #rewardText {
+            position: absolute;
+            left: 50%;
+            bottom: 250px;
+            transform: translateX(-50%);
+            font-size: 55px;
+            font-weight: bold;
+            opacity: 0;
+            z-index: 50;
+            text-shadow: 0 3px 5px black;
+        }
+        .rewardAnim { animation: floatUp 1.2s forwards; }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -120px) scale(1.3); }
+        }
+
+        #legendReward {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 70px;
+            font-weight: bold;
+            color: gold;
+            text-shadow: 0 0 20px gold;
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .legendShow { animation: legendAnim 2s forwards; }
+
+        #mineBtn {
+            position: absolute;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            padding: 18px 40px;
+            font-size: 22px;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #7b4a22, #5a3418);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, .4);
+            touch-action: manipulation;
+        }
+
+        /* نافذة إدخال الاسم */
+        .name-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .name-box {
+            background: linear-gradient(145deg, #4b2a13, #2d160a);
+            padding: 30px;
+            border-radius: 20px;
+            border: 3px solid #7b4a22;
+            text-align: center;
+            color: white;
+            width: 300px;
+            box-shadow: 0 10px 30px black;
+        }
+        .name-input {
+            width: 90%;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border: 2px solid #7b4a22;
+            background: #111;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+        }
+        .name-submit {
+            background: #5dc84f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        /* ===== ميديا كويري متطورة جداً للهواتف والشاشات الصغيرة ===== */
+        @media(max-width:768px) {
+            body {
+                overflow: hidden;
+            }
+            .hud {
+                left: 10px;
+                top: 10px;
+                gap: 5px;
+            }
+            .box {
+                width: 100px;
+                padding: 6px;
+                border-radius: 8px;
+            }
+            .box span {
+                font-size: 16px;
+            }
+            .box small {
+                font-size: 10px;
+            }
+            #activeTitleDisplay {
+                font-size: 10px;
+            }
+            .event-timer-container {
+                font-size: 9px;
+                padding: 3px;
+            }
+            .worker-toggle-btn {
+                padding: 3px;
+                font-size: 10px;
+            }
+            .menu-buttons {
+                right: 10px;
+                top: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }
+            .menu-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                border-radius: 8px;
+                text-align: center;
+                width: 90px;
+            }
+            .health {
+                top: auto;
+                bottom: 240px; /* نقل عداد الطاقة فوق الصخرة مباشرة لتوفير مساحة علوية */
+                left: 50%;
+                width: 90%;
+            }
+            .bar-bg {
+                width: 100%;
+                height: 20px;
+            }
+            .health h2 {
+                font-size: 16px;
+                margin: 2px 0;
+            }
+            .health h3 {
+                font-size: 14px;
+                margin: 2px 0;
+            }
+            .world {
+                height: 320px;
+                bottom: 80px;
+            }
+            .miner-container {
+                width: 90px;
+                left: 10px; /* زحزحة اللاعب لليسار */
+                bottom: 10px;
+            }
+            .player-name-plate {
+                font-size: 11px;
+                padding: 2px 6px;
+            }
+            #rock {
+                width: 200px;
+                max-height: 200px;
+                bottom: 10px;
+            }
+            #mineBtn {
+                padding: 12px 30px;
+                font-size: 18px;
+                bottom: 15px;
+                width: 80%;
+                text-align: center;
+            }
+            .popup-modal {
+                width: 90%;
+                max-height: 85vh;
+                padding: 15px;
+            }
+            #rewardText {
+                font-size: 35px;
+                bottom: 180px;
+            }
+            #legendReward {
+                font-size: 45px;
+            }
+            .bottom-right-notifier {
+                right: auto;
+                left: 10px;
+                bottom: 80px;
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- HUD -->
-
-    <div class="hud">
-
-        <div class="box">🪨 <span id="stones">0</span><small>الحجارة</small></div>
-        <div class="box">⛏️ <span id="damage">1</span><small>القوة</small></div>
-        <div class="box">👷 <span id="workers">0</span><small>العمال</small></div>
-        <div class="box">⭐ <span id="level">1</span><small>المستوى</small></div>
-
+    <div class="name-modal" id="nameModal">
+        <div class="name-box">
+            <h2>مرحباً بك يا بطل! ⛏️</h2>
+            <p>أدخل اسمك لتبدأ رحلة التنقيب الأسطورية:</p>
+            <input type="text" class="name-input" id="playerNameInput" placeholder="اكتب اسمك هنا..." maxlength="15">
+            <button class="name-submit" id="saveNameBtn">ابدأ اللعب 🚀</button>
+        </div>
     </div>
 
-    <!-- الصحة -->
+    <div class="hud">
+        <div class="box">🪨 <span id="stones">0</span><small>الحجارة</small></div>
+        <div class="box" style="border: 1px solid #00e5ff;">💎 <span id="gems">0</span><small>الجواهر</small></div>
+        <div class="box">⛏️ <span id="damage">1</span><small>القوة</small></div>
+        <div class="box">
+            👷 <span id="workers">0</span><small>العمال</small>
+            <button class="worker-toggle-btn" id="workerToggleBtn" onclick="toggleWorkers()">العمال: تعمل ✅</button>
+        </div>
+        <div class="box level-box">
+            ⭐ <span id="level">1</span>
+            <div id="activeTitleDisplay">بلا لقب ⚒️</div>
+            <div class="exp-container">
+                <div id="expBar"></div>
+            </div>
+            <div class="event-timer-container">
+                حدث قادم: <span id="eventCountdownText">10:00</span>
+                <div class="event-mini-bar"><div id="eventMiniBarFill"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-buttons">
+        <button class="menu-btn" id="adminBtnToggle">🛠️ لوحة الأدمن</button>
+        <button class="menu-btn" id="resetBtnToggle" onclick="resetEntireProgress()">⚠️ تصفير</button>
+        <button class="menu-btn" id="skinsBtnToggle" style="background: linear-gradient(145deg, #9b59b6, #4a235a);">👕 السكنات</button>
+        <button class="menu-btn" id="shopBtnToggle">🛒 المتجر</button>
+        <button class="menu-btn" id="bossBtnToggle">👹 الزعماء</button>
+        <button class="menu-btn" id="titlesBtnToggle">🏆 الألقاب</button>
+    </div>
 
     <div class="health">
-
-        <h2>صحة الصخرة</h2>
-
+        <h2 id="targetName">صحة الصخرة</h2>
         <div class="bar-bg">
             <div id="healthBar"></div>
         </div>
-
         <h3 id="healthText">10 / 10</h3>
-
+        <div id="bossTimer">30</div>
+        <div id="eventBanner">حدث خاص نشط! 🔥</div>
     </div>
 
-    <!-- العالم -->
+    <div class="bottom-right-notifier" id="bottomRightNotifier">
+        <span id="notifierEmoji" style="font-size: 24px;">👹</span>
+        <div>
+            <div id="notifierTitle" style="font-size: 13px; color: gold;">إيفنت نشط</div>
+            <div id="notifierTimer">60ث</div>
+        </div>
+    </div>
 
     <div class="world">
-
-        <img src="assets/miner.png" id="miner">
-
-        <img src="assets/rock.png" id="rock">
-
+        <div class="miner-container">
+            <div class="player-name-plate" id="playerNamePlate">لاعب جديد</div>
+            <img src="assets/miner.png" id="miner" alt="Miner">
+        </div>
+        
+        <img src="assets/rock.png" id="rock" alt="Rock">
         <div id="rewardText"></div>
-
         <div id="legendReward">⭐ LEGEND ⭐</div>
-
-        <div id="particles"></div>
-
     </div>
-
-    <!-- زر اللعب -->
 
     <button id="mineBtn">اضغط للتكسير ⛏️</button>
 
-    <!-- المتجر -->
-
-    <div class="shop">
-
-        <h2>المتجر</h2>
-
-        <button id="powerBtn">
-            تطوير القوة<br>
-            <span id="powerCost">50</span>
-        </button>
-
-        <button id="workerBtn">
-            شراء عامل<br>
-            <span id="workerCost">100</span>
-        </button>
-
+    <div class="popup-modal" id="skinsModal">
+        <div class="modal-header">
+            <h2>خزانة الملابس والسكنات 👕</h2>
+            <button class="close-btn" onclick="closeAllModals()">&times;</button>
+        </div>
+        <div id="skinsList"></div>
     </div>
 
-    <!-- الأصوات (هنضيفها بعدين) -->
-    <audio id="hitSound"></audio>
-    <audio id="breakSound"></audio>
+    <div class="popup-modal" id="shopModal">
+        <div class="modal-header">
+            <h2>🛒 متجر التحديثات والتطويرات</h2>
+            <button class="close-btn" onclick="closeAllModals()">&times;</button>
+        </div>
+        
+        <div class="list-card">
+            <h3>⛏️ زيادة القوة العضلية</h3>
+            <p>تمنحك زيادة في قيمة الضرب المباشر للصخور.</p>
+            <button class="shop-btn" id="powerBtn">تطوير القوة <br><span style="color:gold;">🪨 <span id="powerCost">50</span> حجر</span></button>
+        </div>
+
+        <div class="list-card">
+            <h3>👷 توظيف عامل منجم جديد</h3>
+            <p>يقوم العمال بالتنقيب والضرب التلقائي المستمر بالثانية.</p>
+            <button class="shop-btn" id="workerBtn">شراء العامل <br><span style="color:gold;">🪨 <span id="workerCost">100</span> حجر</span></button>
+        </div>
+
+        <div class="list-card">
+            <h3>🧪 مشروب طاقة العمال (30 ثانية)</h3>
+            <p>يضاعف سرعة تنقيب العمال التلقائيين بمقدار <b style="color:lime;">x2 ضربات أسرع</b>!</p>
+            <span id="energyDrinkTimerDisplay" style="color:cyan; font-size:12px; display:none;">متبقي: 0ث</span>
+            <button class="shop-btn shop-premium-btn" id="energyDrinkBtn" onclick="buyEnergyDrink()">شراء المشروب <br><span style="color:#00ffff;">💎 15 جوهرة</span></button>
+        </div>
+
+        <div class="list-card">
+            <h3>📜 لفافة الحظ الأسطوري</h3>
+            <p>ترفع فرصة ظهور صخور الكنوز الذهبية والحمراء بنسبة ثابتة <b style="color:gold;">+5% فرصة إضافية</b>.</p>
+            <span id="luckScrollStatus" style="color:gold; font-size:12px;">غير مفعلة ❌</span>
+            <button class="shop-btn shop-premium-btn" id="luckScrollBtn" onclick="buyLuckScroll()">شراء اللفافة <br><span style="color:#00ffff;">💎 40 جوهرة</span></button>
+        </div>
+    </div>
+
+    <div class="popup-modal" id="bossModal">
+        <div class="modal-header">
+            <h2>زعماء المناجم</h2>
+            <button class="close-btn" onclick="closeAllModals()">&times;</button>
+        </div>
+        <div id="bossList"></div>
+    </div>
+
+    <div class="popup-modal" id="titlesModal">
+        <div class="modal-header">
+            <h2>الإنجازات والألقاب ومزاياها</h2>
+            <button class="close-btn" onclick="closeAllModals()">&times;</button>
+        </div>
+        <div id="titlesList"></div>
+    </div>
+
+    <div class="popup-modal" id="adminModal">
+        <div class="modal-header">
+            <h2 style="color: gold;">🛠️ لوحة الأدمن الخارقة</h2>
+            <button class="close-btn" onclick="closeAllModals()">&times;</button>
+        </div>
+        <p style="text-align:center; color:#ffcc00;">أهلاً بك يا بابا عمر، تحكّم باللعبة بالكامل:</p>
+        <button class="admin-action-btn" onclick="adminGiveStones()">💎 إضافة +10,000 حجر</button>
+        <button class="admin-action-btn" onclick="adminGiveGems()">💎 إضافة +100 جوهرة</button>
+        <button class="admin-action-btn" onclick="adminGiveLevels()">⭐ تخطي +5 ليفلات فوراً</button>
+        <button class="admin-action-btn" onclick="adminUnlockAllTitles()">🏆 فتح جميع الألقاب مجاناً</button>
+        <button class="admin-action-btn" style="background:linear-gradient(90deg, #9b59b6, #8e44ad) !important;" onclick="triggerGlobalEventForce()">🚀 تشغيل إيفنت عشوائي فوراً</button>
+    </div>
 
     <script>
-        // ===== المتغيرات الأساسية =====
+        // ===== المتغيرات الأساسية للعبة =====
+        let playerName = "";
+        let stones = 0;
+        let gems = 0; 
+        let totalStonesMined = 0; 
+        let damage = 1;
+        let workers = 0;
+        let workersEnabled = true; 
+        let level = 1;
+        let currentExp = 0;
 
-let stones = 0;
-let damage = 1;
-let workers = 0;
-let level = 1;
+        let totalCrits = 0;
+        let totalLegendsFound = 0;
+        let boss1Defeated = false;
+        let boss2Defeated = false;
+        let boss3Defeated = false;
+        let boss4Defeated = false;
+        let goblinDefeated = false; 
+        
+        let activeEnergyDrinkTime = 0; 
+        let hasLuckScroll = false; 
 
-let maxHealth = 10;
-let health = maxHealth;
+        function getRequiredExp() { return level * 15 + 10; }
 
-let powerCost = 50;
-let workerCost = 100;
+        let maxHealth = 10;
+        let health = maxHealth;
 
-// ===== العناصر =====
+        let powerCost = 50;
+        let workerCost = 100;
 
-const rock = document.getElementById("rock");
-const miner = document.getElementById("miner");
+        let activeTitle = "بلا لقب ⚒️";
+        let unlockedTitles = ["بلا لقب ⚒️"];
 
-const stonesEl = document.getElementById("stones");
-const damageEl = document.getElementById("damage");
-const workersEl = document.getElementById("workers");
-const levelEl = document.getElementById("level");
+        let activeSkin = "الأساسي";
+        let purchasedSkins = ["الأساسي"];
 
-const healthBar = document.getElementById("healthBar");
-const healthText = document.getElementById("healthText");
+        const skinsData = [
+            { id: "leader", name: "عم زعامه 😎", cost: 100, file: "assets/leader.png", perk: "الميزة: يمنحك +10% فرصة ضربة حرجة (Crit Chance)." },
+            { id: "gang", name: "الجنج 💵", cost: 100, file: "assets/gang.png", perk: "الميزة: زيادة الأرباح بنسبة x1.2 للأحجار العادية." },
+            { id: "mafia", name: "العصابه 🕶️", cost: 100, file: "assets/mafia.png", perk: "الميزة: يمنح العمال التلقائيين +25% سرعة إضافية." },
+            { id: "radex", name: "radex ⚡", cost: 100, file: "assets/radex.png", perk: "الميزة: تمنحك ضربات الماينر الأساسية +4 خبرة (EXP) إضافية." },
+            { id: "maodyy", name: "maodyy التوب 🔥", cost: 100, file: "assets/maodyy.png", perk: "الميزة: تضرب القوة الأساسية في +3 نقاط دبل ثابتة." },
+            { id: "kharshama", name: "خرشمه 💥", cost: 100, file: "assets/kharshama.png", perk: "الميزة: تقليص وقت انتظار الإيفنتات العشوائية بمقدار دقيقتين كاملتين." }
+        ];
 
-const rewardText = document.getElementById("rewardText");
-const legendReward = document.getElementById("legendReward");
+        let activeEvent = null; 
+        let nextEventCooldown = 600; 
+        const maxCooldownValue = 600;
 
-const powerCostEl = document.getElementById("powerCost");
-const workerCostEl = document.getElementById("workerCost");
+        const achievementsData = [
+            { id: "mine_100", name: "بداية الحفر 👶", desc: "اجمع 100 حجر كلياً", title: "مبتدئ 👶", color: "#aaa", perkText: "الميزة: لا توجد ميزة إضافية.", check: () => totalStonesMined >= 100, getProgress: () => ({ current: totalStonesMined, target: 100 }) },
+            { id: "mine_10k", name: "عاشق التكسير ⛏️", desc: "اجمع 10,000 حجر كلياً", title: "المحفراتي ⛏️", color: "#5dc84f", perkText: "الميزة: زيادة الـ EXP المكتسب بنسبة +20%.", check: () => totalStonesMined >= 10000, getProgress: () => ({ current: totalStonesMined, target: 10000 }) },
+            { id: "crit_50", name: "المقاتل السريع ⚡", desc: "سجل 50 ضربة حرجة (CRIT)", title: "المسدد الخارق ⚡", color: "#00ffff", perkText: "الميزة: رفع فرصة ضربات الكريت (CRIT) لـ 20% بدلاً من 12%.", check: () => totalCrits >= 50, getProgress: () => ({ current: totalCrits, target: 50 }) },
+            { id: "find_legend", name: "ضربة حظ أسطورية ✨", desc: "احصل على أول صخرة ذهبية (Legendary)", title: "المحظوظ الأسطوري 💎", color: "gold", perkText: "الميزة: زيادة الجوائز الذهبية والحمراء بنسبة x1.5.", check: () => totalLegendsFound >= 1, getProgress: () => ({ current: totalLegendsFound, target: 1 }) },
+            { id: "goblin_hunter", name: "صائد الجوبلن الماكر 👺", desc: "اقضِ على الجوبلن المختبئ واحصل على كنز الجواهر", title: "قاتل الجوبلن 👺", color: "#2ecc71", perkText: "الميزة: تمنحك ضرباتك فرصة 5% للحصول على 1 جوهرة إضافية من الصخور العادية!", check: () => goblinDefeated, getProgress: () => ({ current: goblinDefeated ? 1 : 0, target: 1 }) },
+            { id: "lvl_25_ach", name: "الوصول للقمة 👑", desc: "تخطي ليفل 25 في المنجم العالمي", title: "الإمبراطور 👑", color: "#f1c40f", perkText: "الميزة: زيادة القوة الكلية بنسبة +5 ضربات إضافية.", check: () => level >= 25, getProgress: () => ({ current: level, target: 25 }) },
+            { id: "gem_rich_ach", name: "خزينة الجواهر الممتلئة 💎", desc: "اجمع 150 جوهرة كلياً", title: "الملياردير 💎", color: "#9b59b6", perkText: "الميزة: فرصة ظهور صخور الجوائز العادية ترتفع بمقدار الضعف.", check: () => gems >= 150, getProgress: () => ({ current: gems, target: 150 }) },
+            { id: "boss_1_ach", name: "قاهر الصخرة العظيمة 🪨", desc: "اهزم الوحش الصخري العملاق", title: "مدمر الجبابرة 🪨", color: "#e67e22", perkText: "الميزة: زيادة قوة ضرباتك بمقدار +2 قوة إضافية ثابتة.", check: () => boss1Defeated, getProgress: () => ({ current: boss1Defeated ? 1 : 0, target: 1 }) },
+            { id: "boss_2_ach", name: "سارق الكريستال المشع 💎", desc: "اهزم صخرة الكريستال المشعة", title: "جامع البلورات 💎", color: "#9b59b6", perkText: "الميزة: ضربات العمال التلقائية تصبح أسرع بمقدار 20%.", check: () => boss2Defeated, getProgress: () => ({ current: boss2Defeated ? 1 : 0, target: 1 }) },
+            { id: "boss_3_ach", name: "محطم الآثار القديمة 🤖", desc: "اهزم حارس المناجم القديم", title: "صائد الغولم 🤖", color: "#34495e", perkText: "الميزة: ضربات العمال التلقائية تعطي قوة دبل (Double Damage).", check: () => boss3Defeated, getProgress: () => ({ current: boss3Defeated ? 1 : 0, target: 1 }) },
+            { id: "boss_4_ach", name: "مطفئ النيازك المشتعلة ☄️", desc: "اهزم صخرة النيزك المشتعلة", title: "ملك الفضاء ☄️", color: "#e74c3c", perkText: "الميزة: مضاعفة جميع الأحجار المجمعة من أي صخرة مرتين (x2 Stones)!", check: () => boss4Defeated, getProgress: () => ({ current: boss4Defeated ? 1 : 0, target: 1 }) }
+        ];
 
-// ===== تحديث الشاشة =====
+        let isBossActive = false;
+        let bossTimerInterval = null;
+        let timeLeft = 30;
+        let activeBossReward = 0;
+        let activeBossId = 0;
 
-function update(){
+        const bossData = [
+            { id: 1, name: "الوحش الصخري العملاق 🪨", reqLevel: 5, hp: 150, reward: 500, img: "assets/boss1.png" },
+            { id: 2, name: "صخرة الكريستال المشعة 💎", reqLevel: 15, hp: 800, reward: 2500, img: "assets/boss2.png" },
+            { id: 3, name: "حارس المناجم القديم 🤖", reqLevel: 30, hp: 5000, reward: 15000, img: "assets/boss3.png" },
+            { id: 4, name: "صخرة النيزك المشتعلة ☄️", reqLevel: 50, hp: 30000, reward: 80000, img: "assets/boss4.png" }
+        ];
 
-    stonesEl.innerText = Math.floor(stones);
-    damageEl.innerText = damage;
-    workersEl.innerText = workers;
-    levelEl.innerText = level;
+        // ===== عناصر الـ DOM الأساسية =====
+        const rock = document.getElementById("rock");
+        const miner = document.getElementById("miner");
+        const stonesEl = document.getElementById("stones");
+        const gemsEl = document.getElementById("gems");
+        const damageEl = document.getElementById("damage");
+        const workersEl = document.getElementById("workers");
+        const levelEl = document.getElementById("level");
+        const expBar = document.getElementById("expBar");
+        const activeTitleDisplay = document.getElementById("activeTitleDisplay");
+        
+        const healthBar = document.getElementById("healthBar");
+        const healthText = document.getElementById("healthText");
+        const targetName = document.getElementById("targetName");
+        const bossTimer = document.getElementById("bossTimer");
+        const eventBanner = document.getElementById("eventBanner");
 
-    healthText.innerText =
-        Math.floor(health) + " / " + Math.floor(maxHealth);
+        const bottomRightNotifier = document.getElementById("bottomRightNotifier");
+        const notifierEmoji = document.getElementById("notifierEmoji");
+        const notifierTitle = document.getElementById("notifierTitle");
+        const notifierTimer = document.getElementById("notifierTimer");
 
-    healthBar.style.width =
-        (health / maxHealth) * 100 + "%";
+        const rewardText = document.getElementById("rewardText");
+        const legendReward = document.getElementById("legendReward");
+        const powerCostEl = document.getElementById("powerCost");
+        const workerCostEl = document.getElementById("workerCost");
+        
+        const shopModal = document.getElementById("shopModal");
+        const bossModal = document.getElementById("bossModal");
+        const titlesModal = document.getElementById("titlesModal");
+        const skinsModal = document.getElementById("skinsModal");
+        const adminModal = document.getElementById("adminModal");
+        const adminBtnToggle = document.getElementById("adminBtnToggle");
 
-    powerCostEl.innerText = powerCost;
-    workerCostEl.innerText = workerCost;
+        // ===== زر تصفير وإعادة تعيين اللعبة بالكامل =====
+        function resetEntireProgress() {
+            let confirmation = confirm("⚠️ هل أنت متأكد تماماً أنك تريد مسح جميع البيانات والإنجازات والبدء من جديد كلياً؟");
+            if (confirmation) {
+                localStorage.removeItem("rockMinerSaveV10"); 
+                
+                playerName = ""; stones = 0; gems = 0; totalStonesMined = 0; damage = 1; workers = 0;
+                workersEnabled = true; level = 1; currentExp = 0; maxHealth = 10; health = maxHealth;
+                powerCost = 50; workerCost = 100; activeTitle = "بلا لقب ⚒️"; unlockedTitles = ["بلا لقب ⚒️"];
+                activeSkin = "الأساسي"; purchasedSkins = ["الأساسي"]; totalCrits = 0; totalLegendsFound = 0;
+                boss1Defeated = false; boss2Defeated = false; boss3Defeated = false; boss4Defeated = false;
+                goblinDefeated = false; activeEnergyDrinkTime = 0; hasLuckScroll = false;
 
-    saveGame();
-}
+                closeAllModals();
+                miner.src = "assets/miner.png";
+                document.getElementById("playerNameInput").value = "";
+                document.getElementById("nameModal").style.display = "flex";
+                
+                update();
+                alert("تم تصفير منجمك بالكامل بنجاح! ⛏️ ابدأ رحلتك الأسطورية الجديدة الآن.");
+            }
+        }
 
-// ===== تأثير الرقم =====
+        // ===== إدارة تشغيل وإيقاف العمال =====
+        function toggleWorkers() {
+            workersEnabled = !workersEnabled;
+            const btn = document.getElementById("workerToggleBtn");
+            if (workersEnabled) {
+                btn.innerText = "العمال: تعمل ✅";
+                btn.classList.remove("stopped");
+                showReward("تم تفعيل العمال! 👷", "lime");
+            } else {
+                btn.innerText = "العمال: معطلة ❌";
+                btn.classList.add("stopped");
+                showReward("تم إيقاف العمال! 🛑", "red");
+            }
+            update();
+        }
 
-function showReward(amount, color){
+        // ===== حفظ وتخزين البيانات الاسمية للأدمن واللاعبين =====
+        document.getElementById("saveNameBtn").onclick = function() {
+            let inputVal = document.getElementById("playerNameInput").value.trim();
+            if(inputVal === "") {
+                alert("الرجاء إدخال اسم صحيح لتبدأ اللعبة!");
+                return;
+            }
+            playerName = inputVal;
+            document.getElementById("nameModal").style.display = "none";
+            applyPlayerNameFeature();
+            update();
+        };
 
-    rewardText.innerText = "+" + amount;
-    rewardText.style.color = color;
+        function applyPlayerNameFeature() {
+            const namePlate = document.getElementById("playerNamePlate");
+            namePlate.innerText = playerName;
 
-    rewardText.classList.remove("rewardAnim");
-    void rewardText.offsetWidth;
-    rewardText.classList.add("rewardAnim");
-}
+            if (playerName === "البابا عمر") {
+                namePlate.classList.add("admin-name"); 
+                adminBtnToggle.style.display = "block"; 
+                showReward("مرحباً بك يا مطورنا العظيم! 🛠️", "gold");
+            } else {
+                namePlate.classList.remove("admin-name");
+                adminBtnToggle.style.display = "none";
+            }
+        }
 
-// ===== legend =====
+        function toggleModal(modalElement) {
+            if (modalElement.style.display === "block") {
+                modalElement.style.display = "none";
+            } else {
+                closeAllModals();
+                modalElement.style.display = "block";
+            }
+        }
 
-function showLegend(){
+        function closeAllModals() {
+            shopModal.style.display = "none";
+            bossModal.style.display = "none";
+            titlesModal.style.display = "none";
+            skinsModal.style.display = "none";
+            adminModal.style.display = "none";
+        }
 
-    legendReward.classList.remove("legendShow");
-    void legendReward.offsetWidth;
-    legendReward.classList.add("legendShow");
-}
+        document.getElementById("shopBtnToggle").onclick = () => toggleModal(shopModal);
+        document.getElementById("bossBtnToggle").onclick = () => toggleModal(bossModal);
+        document.getElementById("titlesBtnToggle").onclick = () => toggleModal(titlesModal);
+        document.getElementById("skinsBtnToggle").onclick = () => toggleModal(skinsModal);
+        adminBtnToggle.onclick = () => toggleModal(adminModal);
 
-// ===== نظام الجائزة =====
+        // ===== لوحة الأدمن الخارقة =====
+        function adminGiveStones() { stones += 10000; totalStonesMined += 10000; update(); }
+        function adminGiveGems() { gems += 100; update(); }
+        function adminGiveLevels() { level += 5; update(); }
+        function adminUnlockAllTitles() {
+            achievementsData.forEach(ach => { if (!unlockedTitles.includes(ach.title)) unlockedTitles.push(ach.title); });
+            goblinDefeated = true; update();
+        }
+        function triggerGlobalEventForce() { closeAllModals(); triggerRandomEvent(true); }
 
-function getReward(){
+        // ===== تحديث وعرض البيانات الرقمية والشاشات =====
+        function update() {
+            stonesEl.innerText = Math.floor(stones);
+            gemsEl.innerText = Math.floor(gems); 
+            damageEl.innerText = getPlayerDamage(); 
+            workersEl.innerText = workers;
+            levelEl.innerText = level;
+            activeTitleDisplay.innerText = activeTitle;
 
-    // ⭐ 1% legendary
-    if(Math.random() < 0.01){
-        showLegend();
-        return {amount:100, color:"gold"};
-    }
+            let pct = (currentExp / getRequiredExp()) * 100;
+            expBar.style.width = pct + "%";
 
-    // 🔴 10% كبيرة
-    if(Math.random() < 0.10){
-        return {amount:20, color:"red"};
-    }
+            if (health < 0) health = 0;
+            healthText.innerText = Math.floor(health) + " / " + Math.floor(maxHealth);
+            healthBar.style.width = (health / maxHealth) * 100 + "%";
 
-    // 🟢 عادية
-    let min = 2 + Math.floor(level / 3);
-    let max = 8 + Math.floor(level / 2);
+            powerCostEl.innerText = powerCost;
+            workerCostEl.innerText = workerCost;
 
-    let amount =
-        Math.floor(Math.random() * (max - min + 1)) + min;
+            const luckScrollStatus = document.getElementById("luckScrollStatus");
+            if (hasLuckScroll) {
+                luckScrollStatus.innerText = "مفعلة بشكل دائم ✅ (+5% حظ)";
+                luckScrollStatus.style.color = "gold";
+                document.getElementById("luckScrollBtn").disabled = true;
+                document.getElementById("luckScrollBtn").innerText = "تم الشراء ✔️";
+            } else {
+                luckScrollStatus.innerText = "غير مفعلة ❌";
+                luckScrollStatus.style.color = "#ccc";
+                document.getElementById("luckScrollBtn").disabled = false;
+            }
 
-    return {amount, color:"lime"};
-}
+            checkAchievements(); 
+            renderBossList();
+            renderTitlesList();
+            renderSkinsList();
+            saveGame();
+        }
 
-// ===== كسر الصخرة =====
+        function getPlayerDamage() {
+            let baseDamage = damage;
+            if (activeTitle === "مدمر الجبابرة 🪨") baseDamage += 2;
+            if (activeTitle === "👑 الإمبراطور") baseDamage += 5;
+            if (activeSkin === "maodyy التوب 🔥") baseDamage += 3;
+            if (activeEvent === 'volcano') baseDamage *= 3;
+            return baseDamage;
+        }
 
-function breakRock(){
+        function showReward(amount, color) {
+            rewardText.innerText = typeof amount === "number" ? "+" + amount : amount;
+            rewardText.style.color = color;
+            rewardText.classList.remove("rewardAnim");
+            void rewardText.offsetWidth;
+            rewardText.classList.add("rewardAnim");
+        }
 
-    const reward = getReward();
+        function showLegend() {
+            legendReward.classList.remove("legendShow"); void legendReward.offsetWidth; legendReward.classList.add("legendShow");
+        }
 
-    stones += reward.amount;
+        function checkAchievements() {
+            achievementsData.forEach(ach => {
+                if (ach.check() && !unlockedTitles.includes(ach.title)) {
+                    unlockedTitles.push(ach.title);
+                    showReward(`لقب جديد: [${ach.title}] 🏆`, "gold");
+                }
+            });
+        }
 
-    showReward(reward.amount, reward.color);
+        function getReward() {
+            let scalingFactor = Math.floor(totalStonesMined / 150); 
+            let minNormal = 10 + scalingFactor;
+            let maxNormal = 19 + scalingFactor;
+            let normalAmount = Math.floor(Math.random() * (maxNormal - minNormal + 1)) + minNormal;
+            if (activeSkin === "الجنج 💵") normalAmount = Math.floor(normalAmount * 1.2);
 
-    level++;
+            let redAmount = 20 + Math.floor(totalStonesMined / 80); 
+            let goldAmount = 100 + Math.floor(totalStonesMined / 20); 
 
-    maxHealth += 5 + Math.floor(level / 3);
-    health = maxHealth;
+            if (activeTitle === "المحظوظ الأسطوري 💎") { redAmount *= 1.5; goldAmount *= 1.5; }
 
-    update();
-}
+            let chance = Math.random();
+            let legendThreshold = hasLuckScroll ? 0.08 : 0.03;
+            let rareThreshold = hasLuckScroll ? 0.25 : 0.15;
 
-// ===== الضرب =====
+            if (chance < legendThreshold) { totalLegendsFound++; showLegend(); return { amount: Math.floor(goldAmount), color: "gold" }; }
+            if (chance < rareThreshold) { return { amount: Math.floor(redAmount), color: "red" }; }
+            return { amount: normalAmount, color: "lime" };
+        }
 
-function hit(){
+        function breakRock() {
+            let multiplier = (activeTitle === "ملك الفضاء ☄️") ? 2 : 1; 
 
-    // حركة المينر
-    miner.classList.add("miner-hit");
-    setTimeout(() => miner.classList.remove("miner-hit"), 120);
+            if (isBossActive) {
+                clearInterval(bossTimerInterval);
+                if (activeBossId === 1) boss1Defeated = true;
+                if (activeBossId === 2) boss2Defeated = true;
+                if (activeBossId === 3) boss3Defeated = true;
+                if (activeBossId === 4) boss4Defeated = true;
 
-    // حركة الصخرة
-    rock.classList.add("rock-hit");
-    setTimeout(() => rock.classList.remove("rock-hit"), 120);
+                let finalReward = activeBossReward * multiplier;
+                stones += finalReward; totalStonesMined += finalReward;
+                showReward(finalReward, "gold");
+                endBossFight();
+            } 
+            else if (activeEvent !== null) {
+                if (activeEvent === 'lucky') {
+                    let luckyReward = (200 + level * 20) * multiplier;
+                    stones += luckyReward; totalStonesMined += luckyReward;
+                    showReward(luckyReward, "gold");
+                    clearInterval(bossTimerInterval); endEvent();
+                } 
+                else if (activeEvent === 'risk') {
+                    if (Math.random() > 0.3) {
+                        let riskReward = (500 + level * 50) * multiplier;
+                        stones += riskReward; totalStonesMined += riskReward; showReward(riskReward, "lime");
+                    } else {
+                        let loss = Math.floor(stones * 0.15); stones -= loss; showReward(`خسرت ${loss} حجر 💥`, "red");
+                    }
+                    clearInterval(bossTimerInterval); endEvent();
+                }
+                else if (activeEvent === 'goblin') {
+                    goblinDefeated = true;
+                    stones += 100000; totalStonesMined += 100000;
+                    let luckyGems = Math.floor(Math.random() * (25 - 10 + 1)) + 10;
+                    gems += luckyGems;
+                    showReward(`+100,000 حجر و +${luckyGems} جوهرة! 💎`, "#00e5ff");
+                    clearInterval(bossTimerInterval); endEvent();
+                }
+                else if (activeEvent === 'volcano') {
+                    let volcanoBonus = (300 + level * 30) * multiplier;
+                    stones += volcanoBonus; totalStonesMined += volcanoBonus;
+                    showReward(volcanoBonus, "#e74c3c");
+                    
+                    maxHealth = level * 60 + 500;
+                    health = maxHealth;
+                }
+            }
+            else {
+                const reward = getReward();
+                let finalAmount = reward.amount * multiplier;
+                stones += finalAmount; totalStonesMined += finalAmount;
+                showReward(finalAmount, reward.color);
 
-    // critical hit
-    let finalDamage = damage;
+                if (activeTitle === "قاتل الجوبلن 👺" && Math.random() < 0.05) { gems += 1; }
 
-    if(Math.random() < 0.1){
-        finalDamage *= 2;
-        showReward("CRIT!", "gold");
-    }
+                let expGain = 5 + Math.floor(level * 0.3);
+                if (activeTitle === "المحفراتي ⛏️") expGain = Math.floor(expGain * 1.2);
+                if (activeSkin === "radex ⚡") expGain += 4;
 
-    health -= finalDamage;
+                currentExp += expGain;
+                if (currentExp >= getRequiredExp()) { currentExp -= getRequiredExp(); level++; showReward("LEVEL UP! ⭐", "gold"); }
 
-    if(health <= 0){
-        breakRock();
-    }
+                maxHealth += 5 + Math.floor(level * 1.5);
+                health = maxHealth;
+            }
+            update();
+        }
 
-    update();
-}
+        function startBoss(bossId) {
+            if (activeEvent !== null) { alert("لا يمكنك استدعاء زعيم أثناء وجود حدث خاص نشط!"); return; }
+            const boss = bossData.find(b => b.id === bossId);
+            if (!boss) return;
 
-// ===== الأحداث =====
+            closeAllModals(); isBossActive = true; activeBossId = boss.id;
+            targetName.innerText = boss.name; maxHealth = boss.hp; health = maxHealth; activeBossReward = boss.reward;
 
-rock.onclick = hit;
-document.getElementById("mineBtn").onclick = hit;
+            rock.src = boss.img;
+            rock.style.width = "550px";
+            rock.style.bottom = "-10px";
+            
+            // تهيئة الحجم المناسب للموبايل عند ظهور البوس
+            if(window.innerWidth <= 768) {
+                rock.style.width = "220px";
+                rock.style.bottom = "10px";
+            }
 
-// ===== الشراء =====
+            healthBar.classList.add("boss-health-bar");
+            bossTimer.style.display = "block";
+            timeLeft = 30; bossTimer.innerText = timeLeft;
 
-function buyPower(){
+            clearInterval(bossTimerInterval);
+            bossTimerInterval = setInterval(() => {
+                timeLeft--; bossTimer.innerText = timeLeft;
+                if (timeLeft <= 0) { clearInterval(bossTimerInterval); endBossFight(); }
+            }, 1000);
+            update();
+        }
 
-    if(stones >= powerCost){
-        stones -= powerCost;
-        damage++;
+        function endBossFight() {
+            isBossActive = false; healthBar.classList.remove("boss-health-bar"); bossTimer.style.display = "none";
+            clearInterval(bossTimerInterval);
+            rock.src = "assets/rock.png"; 
+            rock.style.width = window.innerWidth <= 768 ? "200px" : "400px"; 
+            rock.style.bottom = window.innerWidth <= 768 ? "10px" : "0px"; 
+            targetName.innerText = "صحة الصخرة"; maxHealth = 10 + (level * 8); health = maxHealth; update();
+        }
 
-        powerCost = Math.floor(powerCost * 1.5);
+        setInterval(() => {
+            if (activeEnergyDrinkTime > 0) {
+                activeEnergyDrinkTime--;
+                const drinkTimer = document.getElementById("energyDrinkTimerDisplay");
+                drinkTimer.style.display = "block";
+                drinkTimer.innerText = `متبقي: ${activeEnergyDrinkTime}ث دبل عمال!`;
+                if (activeEnergyDrinkTime <= 0) {
+                    drinkTimer.style.display = "none";
+                    showReward("انتهى مفعول مشروب الطاقة! 🧪", "orange");
+                }
+            }
 
+            if (!isBossActive && activeEvent === null) {
+                let reduce = (activeSkin === "خرشمه 💥") ? 2 : 1;
+                nextEventCooldown -= reduce;
+                if (nextEventCooldown <= 0) { triggerRandomEvent(false); }
+            }
+            let minutes = Math.max(0, Math.floor(nextEventCooldown / 60));
+            let seconds = Math.max(0, nextEventCooldown % 60);
+            document.getElementById("eventCountdownText").innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            document.getElementById("eventMiniBarFill").style.width = (nextEventCooldown / maxCooldownValue) * 100 + "%";
+        }, 1000);
+
+        function triggerRandomEvent(force = false) {
+            if (isBossActive || (activeEvent !== null && !force)) return;
+
+            let eventChoices = ['lucky', 'risk', 'goblin', 'volcano'];
+            let picked = eventChoices[Math.floor(Math.random() * eventChoices.length)];
+
+            timeLeft = 60;
+
+            if (picked === 'lucky') {
+                activeEvent = 'lucky'; targetName.innerText = "✨ صخرة الحظ المشتعلة ✨"; maxHealth = level * 15 + 40;
+                rock.src = "assets/lucky_rock.png"; 
+                rock.style.width = window.innerWidth <= 768 ? "220px" : "550px"; 
+                rock.style.bottom = window.innerWidth <= 768 ? "10px" : "-10px";
+                eventBanner.innerText = "حدث نشط: صخرة الحظ! ⚡"; showBottomNotifier("🍀", "صخرة الحظ");
+            } 
+            else if (picked === 'risk') {
+                activeEvent = 'risk'; targetName.innerText = "💥 صخرة التحدي والمخاطرة 💥"; maxHealth = level * 30 + 100;
+                rock.src = "assets/risk_rock.png"; 
+                rock.style.width = window.innerWidth <= 768 ? "220px" : "550px"; 
+                rock.style.bottom = window.innerWidth <= 768 ? "10px" : "-10px";
+                eventBanner.innerText = "حدث نشط: صخرة المخاطرة! ⚠️"; showBottomNotifier("⚠️", "صخرة المخاطرة");
+            }
+            else if (picked === 'goblin') {
+                activeEvent = 'goblin'; targetName.innerText = "👺 الجوبلن السارق الماكر 👺"; maxHealth = level * 40 + 200;
+                rock.src = "assets/goblin.png"; 
+                rock.style.width = window.innerWidth <= 768 ? "180px" : "400px"; 
+                rock.style.bottom = window.innerWidth <= 768 ? "20px" : "30px";
+                eventBanner.innerText = "حدث نشط: جوبلن الكنوز! 🪙"; showBottomNotifier("👺", "إيفنت الجوبلن");
+            }
+            else if (picked === 'volcano') {
+                activeEvent = 'volcano'; targetName.innerText = "🌋 بركان الغضب الثائر 🌋"; maxHealth = level * 60 + 500;
+                rock.src = "assets/rock.png"; 
+                rock.style.width = window.innerWidth <= 768 ? "200px" : "400px"; 
+                rock.style.bottom = window.innerWidth <= 768 ? "10px" : "-10px";
+                document.body.style.background = "url('assets/volcano_bg.png') no-repeat center center fixed"; document.body.style.backgroundSize = "cover";
+                eventBanner.innerText = "قوتك x3! 🔥"; showBottomNotifier("🌋", "ثوران البركان");
+            }
+
+            health = maxHealth;
+            eventBanner.style.display = "block"; healthBar.classList.add("event-health-bar");
+            bossTimer.style.display = "block"; bossTimer.innerText = timeLeft;
+
+            clearInterval(bossTimerInterval);
+            bossTimerInterval = setInterval(() => {
+                timeLeft--; bossTimer.innerText = timeLeft; notifierTimer.innerText = timeLeft + "ث";
+                if (timeLeft <= 0) { clearInterval(bossTimerInterval); endEvent(); }
+            }, 1000);
+            update();
+        }
+
+        function showBottomNotifier(emoji, title) {
+            bottomRightNotifier.style.display = "flex"; notifierEmoji.innerText = emoji; notifierTitle.innerText = title; notifierTimer.innerText = timeLeft + "ث";
+        }
+
+        function endEvent() {
+            activeEvent = null; eventBanner.style.display = "none"; bottomRightNotifier.style.display = "none";
+            healthBar.classList.remove("event-health-bar"); bossTimer.style.display = "none"; clearInterval(bossTimerInterval);
+            document.body.style.background = "url('assets/background.png') no-repeat center center fixed"; document.body.style.backgroundSize = "cover";
+
+            rock.src = "assets/rock.png"; 
+            rock.style.width = window.innerWidth <= 768 ? "200px" : "400px"; 
+            rock.style.bottom = window.innerWidth <= 768 ? "10px" : "0px";
+            targetName.innerText = "صحة الصخرة"; maxHealth = 10 + (level * 8); health = maxHealth;
+            nextEventCooldown = maxCooldownValue; update();
+        }
+
+        function buyPower() { 
+            if (stones >= powerCost) { 
+                stones -= powerCost; 
+                damage += 1 + Math.floor(level / 12); 
+                powerCost = Math.floor(powerCost * 1.5); 
+                showReward("تطورت قوتك! 💪", "lime");
+                update(); 
+            } else { alert("حجارتك غير كافية لتطوير القوة الماينر 🪨"); }
+        }
+        
+        function buyWorker() { 
+            if (stones >= workerCost) { 
+                stones -= workerCost; 
+                workers++; 
+                workerCost = Math.floor(workerCost * 1.6); 
+                showReward("تم تعيين عامل جديد! 👷", "lime");
+                update(); 
+            } else { alert("حجارتك غير كافية لتوظيف عامل منجم جديد 🪨"); }
+        }
+
+        function buyEnergyDrink() {
+            if (gems >= 15) {
+                gems -= 15;
+                activeEnergyDrinkTime += 30; 
+                showReward("نشاط خارق! العمال أسرع الآن 🧪🔥", "cyan");
+                update();
+            } else { alert("جواهرك غير كافية لشراء مشروب الطاقة! 💎"); }
+        }
+
+        function buyLuckScroll() {
+            if (hasLuckScroll) return;
+            if (gems >= 40) {
+                gems -= 40;
+                hasLuckScroll = true;
+                showReward("تم تفعيل لفافة الحظ الأسطورية بشكل دائم! 📜✨", "gold");
+                update();
+            } else { alert("جواهرك غير كافية لشراء لفافة الحظ! 💎"); }
+        }
+
+        document.getElementById("powerBtn").onclick = buyPower;
+        document.getElementById("workerBtn").onclick = buyWorker;
+
+        function renderSkinsList() {
+            const container = document.getElementById("skinsList");
+            container.innerHTML = "";
+
+            const defCard = document.createElement("div");
+            defCard.className = "list-card";
+            let isDefEquipped = activeSkin === "الأساسي";
+            defCard.innerHTML = `
+                <h3>المظهر الافتراضي 👷</h3>
+                <div class="title-perk-tooltip"><div>سكن عامل المناجم الطبيعي بدون إضافات.</div></div>
+                <button class="title-equip-btn ${isDefEquipped ? 'equipped' : ''}" id="equip_def_skin">
+                    ${isDefEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
+                </button>
+            `;
+            container.appendChild(defCard);
+            document.getElementById("equip_def_skin").onclick = () => equipSkin('الأساسي', 'assets/miner.png');
+
+            skinsData.forEach((skin, index) => {
+                const card = document.createElement("div");
+                card.className = "list-card";
+                let isOwned = purchasedSkins.includes(skin.name);
+                let isEquipped = activeSkin === skin.name;
+                let btnId = `skin_btn_${index}`;
+
+                card.innerHTML = `
+                    <h3>${skin.name}</h3>
+                    <div class="title-perk-tooltip"><div>${skin.perk}</div></div>
+                    ${isOwned ? `
+                        <button class="title-equip-btn ${isEquipped ? 'equipped' : ''}" id="${btnId}">
+                            ${isEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
+                        </button>
+                    ` : `
+                        <button class="shop-btn" style="background:#9b59b6" id="${btnId}">شراء 💎 ${skin.cost}</button>
+                    `}
+                `;
+                container.appendChild(card);
+                
+                document.getElementById(btnId).onclick = () => {
+                    if(isOwned) equipSkin(skin.name, skin.file);
+                    else buySkin(skin.name, skin.cost);
+                };
+            });
+        }
+
+        function buySkin(skinName, cost) {
+            if (gems >= cost) {
+                gems -= cost;
+                purchasedSkins.push(skinName);
+                showReward(`مبارك! اشتريت سكن: ${skinName} 🎉`, "gold");
+                update();
+            } else { alert("جواهرك غير كافية لشراء هذا السكن! 👺"); }
+        }
+
+        function equipSkin(skinName, skinFile) {
+            activeSkin = skinName;
+            miner.src = skinFile;
+            showReward(`تم تجهيز مظهر: ${skinName} ✨`, "#9b59b6");
+            update();
+        }
+
+        function renderBossList() {
+            const container = document.getElementById("bossList"); container.innerHTML = "";
+            bossData.forEach((boss, index) => {
+                const card = document.createElement("div"); card.className = "list-card"; let isUnlocked = level >= boss.reqLevel;
+                let btnId = `boss_btn_${index}`;
+                card.innerHTML = `
+                    <h3>${boss.name}</h3><p>المستوى: ${boss.reqLevel} | ❤️ ${boss.hp}</p>
+                    <button class="action-btn" ${!isUnlocked || isBossActive || activeEvent !== null ? "disabled" : ""} id="${btnId}">
+                        ${!isUnlocked ? "مغلق 🔒" : isBossActive ? "أنت في قتال" : activeEvent !== null ? "حدث نشط" : "استدعاء ⚔️"}
+                    </button>
+                `;
+                container.appendChild(card);
+                document.getElementById(btnId).onclick = () => startBoss(boss.id);
+            });
+        }
+
+        function renderTitlesList() {
+            const container = document.getElementById("titlesList"); container.innerHTML = "";
+            
+            const defaultCard = document.createElement("div"); defaultCard.className = "list-card"; let isDefaultEquipped = activeTitle === "بلا لقب ⚒️";
+            defaultCard.innerHTML = `<h3>بدون لقب ⚒️</h3>
+                <button class="title-equip-btn ${isDefaultEquipped ? 'equipped' : ''}" id="title_btn_def">${isDefaultEquipped ? "مجهز حالياً ✨" : "تجهيز اللقب 👤"}</button>`;
+            container.appendChild(defaultCard);
+            document.getElementById("title_btn_def").onclick = () => equipTitle('بلا لقب ⚒️');
+
+            achievementsData.forEach((ach, index) => {
+                const card = document.createElement("div"); card.className = "list-card"; let hasUnlocked = unlockedTitles.includes(ach.title); let isEquipped = activeTitle === ach.title;
+                let prog = ach.getProgress(); let currentNum = Math.min(prog.current, prog.target); let targetNum = prog.target; let pct = (currentNum / targetNum) * 100;
+                let btnId = `title_btn_${index}`;
+                let progressHTML = hasUnlocked ? `<span class="ach-progress-text" style="color:#00ffcc">مكتمل 🎉</span>` : `
+                        <div class="ach-progress-container"><div class="ach-progress-bar" style="width: ${pct}%"></div></div><span class="ach-progress-text">${Math.floor(currentNum)} / ${targetNum}</span>`;
+
+                card.innerHTML = `
+                    <h3 style="color: ${ach.color}">${ach.name}</h3><p>اللقب: <b>${ach.title}</b></p>
+                    <div class="title-perk-tooltip"><div>${ach.perkText}</div>${progressHTML}</div>
+                    <button class="title-equip-btn ${isEquipped ? 'equipped' : ''}" ${!hasUnlocked ? 'disabled' : ''} id="${btnId}">
+                        ${!hasUnlocked ? "مغلق 🔒" : isEquipped ? "مجهز حالياً ✨" : "تجهيز اللقب 👤"}
+                    </button>
+                `;
+                container.appendChild(card);
+                document.getElementById(btnId).onclick = () => equipTitle(ach.title);
+            });
+        }
+
+        function equipTitle(titleName) { activeTitle = titleName; update(); }
+
+        // ===== الضرب والتنفيذ العضلي والتأثيرات =====
+        function hit(damageAmount, isPlayer = true) {
+            let finalDamage = damageAmount;
+
+            if (isPlayer) {
+                miner.classList.add("miner-hit"); setTimeout(() => miner.classList.remove("miner-hit"), 120);
+                rock.classList.add("rock-hit"); setTimeout(() => rock.classList.remove("rock-hit"), 120);
+
+                let critChance = (activeTitle === "المسدد الخارق ⚡") ? 0.20 : 0.12;
+                if (activeSkin === "عم زعامه 😎") critChance += 0.10;
+
+                if (Math.random() < critChance) { finalDamage *= 2; totalCrits++; showReward("CRIT!", "gold"); }
+            } else {
+                rock.classList.add("rock-hit"); setTimeout(() => rock.classList.remove("rock-hit"), 80);
+            }
+
+            if (activeEvent === 'lucky' && isPlayer) { finalDamage = Math.floor(finalDamage * 1.5); }
+
+            health -= finalDamage;
+            if (health <= 0) { breakRock(); }
+            update();
+        }
+
+        // دعم أحداث اللمس للموبايل بدلاً من click فقط لمنع تأخير الـ 300ms
+        rock.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            hit(getPlayerDamage(), true);
+        }, { passive: false });
+        
+        rock.onclick = () => hit(getPlayerDamage(), true);
+
+        const mineBtn = document.getElementById("mineBtn");
+        mineBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            hit(getPlayerDamage(), true);
+        }, { passive: false });
+        
+        mineBtn.onclick = () => hit(getPlayerDamage(), true);
+
+        function workerLoop() {
+            if (workers > 0 && workersEnabled) {
+                let workerDamage = workers * (1 + level * 0.05);
+                if (activeTitle === "صائد الغولم 🤖") workerDamage *= 2;
+                hit(workerDamage, false);
+            }
+            
+            let baseSpeed = (activeTitle === "جامع البلورات 💎") ? 800 : 1000;
+            if (activeSkin === "العصابه 🕶️") baseSpeed -= 200;
+            
+            let finalSpeed = (activeEnergyDrinkTime > 0) ? (baseSpeed / 2) : baseSpeed; 
+            
+            setTimeout(workerLoop, finalSpeed);
+        }
+        setTimeout(workerLoop, 1000);
+
+        function saveGame() {
+            if(isBossActive || activeEvent !== null || playerName === "") return;
+            localStorage.setItem("rockMinerSaveV10", JSON.stringify({
+                playerName, stones, gems, totalStonesMined, damage, workers, workersEnabled, level, currentExp, maxHealth, powerCost, workerCost, activeTitle, unlockedTitles, activeSkin, purchasedSkins,
+                totalCrits, totalLegendsFound, boss1Defeated, boss2Defeated, boss3Defeated, boss4Defeated, goblinDefeated,
+                activeEnergyDrinkTime, hasLuckScroll
+            }));
+        }
+
+        function loadGame() {
+            const data = JSON.parse(localStorage.getItem("rockMinerSaveV10"));
+            if (data) {
+                playerName = data.playerName || ""; stones = data.stones || 0; gems = data.gems || 0; totalStonesMined = data.totalStonesMined || 0;
+                damage = data.damage || 1; workers = data.workers || 0; workersEnabled = data.workersEnabled !== undefined ? data.workersEnabled : true;
+                level = data.level || 1; currentExp = data.currentExp || 0; maxHealth = data.maxHealth || 10; health = maxHealth;
+                powerCost = data.powerCost || 50; workerCost = data.workerCost || 100; activeTitle = data.activeTitle || "بلا لقب ⚒️";
+                unlockedTitles = data.unlockedTitles || ["بلا لقب ⚒️"]; activeSkin = data.activeSkin || "الأساسي"; purchasedSkins = data.purchasedSkins || ["الأساسي"];
+                totalCrits = data.totalCrits || 0; totalLegendsFound = data.totalLegendsFound || 0;
+                boss1Defeated = data.boss1Defeated || false; boss2Defeated = data.boss2Defeated || false; boss3Defeated = data.boss3Defeated || false; boss4Defeated = data.boss4Defeated || false; goblinDefeated = data.goblinDefeated || false;
+                activeEnergyDrinkTime = data.activeEnergyDrinkTime || 0; hasLuckScroll = data.hasLuckScroll || false;
+            }
+
+            if (playerName === "") { document.getElementById("nameModal").style.display = "flex"; } 
+            else { document.getElementById("nameModal").style.display = "none"; applyPlayerNameFeature(); }
+            
+            if (activeSkin !== "الأساسي") {
+                const sFound = skinsData.find(s => s.name === activeSkin);
+                if(sFound) miner.src = sFound.file;
+            }
+            const btn = document.getElementById("workerToggleBtn");
+            if(!workersEnabled) { btn.innerText = "العمال: معطلة ❌"; btn.classList.add("stopped"); }
+        }
+
+        loadGame();
         update();
-    }
-}
 
-function buyWorker(){
-
-    if(stones >= workerCost){
-        stones -= workerCost;
-        workers++;
-
-        workerCost = Math.floor(workerCost * 1.7);
-
-        update();
-    }
-}
-
-document.getElementById("powerBtn").onclick = buyPower;
-document.getElementById("workerBtn").onclick = buyWorker;
-
-// ===== العمال (Idle income) =====
-
-setInterval(() => {
-
-    stones += workers * (1 + level * 0.05);
-
-    update();
-
-}, 1000);
-
-// ===== الحفظ =====
-
-function saveGame(){
-
-    localStorage.setItem("rockMinerSave", JSON.stringify({
-        stones,
-        damage,
-        workers,
-        level,
-        maxHealth,
-        powerCost,
-        workerCost
-    }));
-}
-
-// ===== التحميل =====
-
-function loadGame(){
-
-    const data = JSON.parse(localStorage.getItem("rockMinerSave"));
-
-    if(data){
-        stones = data.stones || 0;
-        damage = data.damage || 1;
-        workers = data.workers || 0;
-        level = data.level || 1;
-
-        maxHealth = data.maxHealth || 10;
-        powerCost = data.powerCost || 50;
-        workerCost = data.workerCost || 100;
-
-        health = maxHealth;
-    }
-}
-
-// ===== تشغيل اللعبة =====
-
-loadGame();
-update();
+        // حل مشكلة في JavaScript لعناصر الـ onclick داخل المودال على الموبايل
+        document.querySelectorAll('.popup-modal button').forEach(button => {
+            button.addEventListener('touchend', function(e) {
+                // نترك الضغط يعمل بسلاسة دون تأخير
+            });
+        });
     </script>
-
 </body>
-
 </html>
