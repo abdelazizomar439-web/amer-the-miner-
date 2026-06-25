@@ -286,7 +286,7 @@
             filter: brightness(1.3);
         }
 
-        /* ===== الأرقام الطائرة ข่ารเกะ ===== */
+        /* ===== الأرقام الطائرة ===== */
         .floating-damage {
             position: fixed;
             pointer-events: none;
@@ -353,7 +353,7 @@
             transform: translate(-50%, -50%);
             width: 420px;
             max-height: 80vh; 
-            background: rgba(30, 14, 6, 0.92);
+            background: rgba(30, 14, 6, 0.95);
             backdrop-filter: blur(15px);
             color: white;
             padding: 25px;
@@ -422,14 +422,16 @@
 
         .list-card {
             position: relative;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0,0,0,0.6);
             padding: 16px;
             border-radius: 14px;
             margin-bottom: 15px;
             border: 1px solid #5a3418;
             text-align: center;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            transition: 0.3s;
         }
+        .list-card:hover { border-color: gold; }
         .list-card h3 { margin: 0 0 6px 0; font-size: 17px; color: #ffcc00; }
         
         .title-perk-tooltip {
@@ -490,6 +492,7 @@
             color: white;
             text-align: center;
             font-size: 14px;
+            box-sizing: border-box;
         }
 
         /* ===== ستايل جدول لوحة المتصدرين الفخم ===== */
@@ -514,7 +517,7 @@
         }
         .leaderboard-table tr { background-color: rgba(0, 0, 0, 0.3); }
         .leaderboard-table tr:nth-child(even) { background-color: rgba(0, 0, 0, 0.5); }
-        .leaderboard-table tr:hover { background-color: rgba(123, 74, 34, 0.3); }
+        .leaderboard-table tr:hover { background-color: rgba(123, 74, 34, 0.5); }
         .rank-1 { color: #ffe700; font-weight: bold; text-shadow: 0 0 8px rgba(255,231,0,0.5); }
         .rank-2 { color: #dfdfdf; font-weight: bold; }
         .rank-3 { color: #df9e5f; font-weight: bold; }
@@ -578,6 +581,7 @@
         #mineBtn:hover { transform: translateX(-50%) scale(1.03); background: linear-gradient(145deg, #8c5529, #663c1c); box-shadow: 0 12px 30px rgba(0, 0, 0, .7); }
         #mineBtn:active { transform: translateX(-50%) scale(0.97); }
 
+        /* ===== نظام تسجيل الدخول الجديد ===== */
         .name-modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -590,24 +594,46 @@
         }
         .name-box {
             background: rgba(45, 22, 10, 0.95);
-            padding: 35px;
+            padding: 30px;
             border-radius: 24px;
             border: 3px solid #7b4a22;
             text-align: center;
             color: white;
-            width: 320px;
+            width: 340px;
             box-shadow: 0 15px 40px black;
+        }
+        .auth-tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #5a3418;
+            padding-bottom: 10px;
+        }
+        .auth-tabs button {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px 10px;
+            transition: 0.3s;
+        }
+        .auth-tabs button.active {
+            color: gold;
+            border-bottom: 2px solid gold;
         }
         .name-input {
             width: 90%;
             padding: 12px;
-            margin-top: 15px;
+            margin-top: 10px;
             border-radius: 10px;
             border: 2px solid #7b4a22;
             background: #111;
             color: white;
             font-size: 16px;
             text-align: center;
+            box-sizing: border-box;
         }
         .name-input:focus { border-color: gold; outline: none; }
         .name-submit {
@@ -660,10 +686,14 @@
     <div class="name-modal" id="nameModal">
         <div class="name-box">
             <h2>مرحباً بك يا بطل! ⛏️</h2>
-            <p>أدخل اسمك لتبدأ رحلة التنقيب الأسطورية:</p>
-            <div id="nameErrorMsg" style="color: #ff4a4a; font-size: 12px; font-weight: bold; margin-bottom: 5px; display: none;"></div>
-            <input type="text" class="name-input" id="playerNameInput" placeholder="اكتب اسمك هنا..." maxlength="15">
-            <button class="name-submit" id="saveNameBtn">ابدأ اللعب 🚀</button>
+            <div class="auth-tabs">
+                <button id="tabLogin" class="active" onclick="switchAuthMode('login')">تسجيل الدخول</button>
+                <button id="tabRegister" onclick="switchAuthMode('register')">حساب جديد</button>
+            </div>
+            <div id="nameErrorMsg" style="color: #ff4a4a; font-size: 13px; font-weight: bold; margin-bottom: 10px; display: none;"></div>
+            <input type="text" class="name-input" id="playerNameInput" placeholder="اسم اللاعب..." maxlength="15">
+            <input type="password" class="name-input" id="playerPasswordInput" placeholder="كلمة المرور..." maxlength="20">
+            <button class="name-submit" id="saveNameBtn">دخول 🚀</button>
         </div>
     </div>
 
@@ -723,7 +753,6 @@
             <img src="assets/miner.png" id="miner" alt="Miner">
         </div>
 
-        <!-- سكن الحليف المشترك في التحالفات -->
         <div class="miner-container" id="allyContainer" style="display: none; left: 25%; transform: scaleX(-1);">
             <div class="player-name-plate" id="allyNamePlate" style="transform: scaleX(-1);">حليف</div>
             <img src="assets/miner.png" id="allyMiner" alt="Ally Miner">
@@ -736,7 +765,6 @@
 
     <button id="mineBtn">اضغط للتكسير ⛏️</button>
 
-    <!-- مودال التحالفات المطور والآمن -->
     <div class="popup-modal" id="allianceModal">
         <div class="modal-header">
             <h2>🤝 نظام التحالفات الأسطورية</h2>
@@ -880,6 +908,8 @@
             Object.values(sounds).forEach(sound => sound.volume = 0.4);
 
             let playerName = "";
+            let playerPassword = "";
+            let authMode = "login"; // "login" or "register"
             let alliancePartner = null; 
             let stones = 0;
             let gems = 0; 
@@ -1004,26 +1034,28 @@
             }
 
             window.resetEntireProgress = async function() {
-                let confirmation = confirm("⚠️ هل أنت متأكد تماماً أنك تريد مسح جميع البيانات والإنجازات والبدء من جديد كلياً؟");
+                let confirmation = confirm("⚠️ هل أنت متأكد تماماً أنك تريد مسح جميع البيانات والإنجازات والبدء من جديد كلياً؟ (سيتم مسح اسمك من الليدربورد)");
                 if (confirmation) {
                     let oldName = playerName;
                     localStorage.removeItem("rockMinerSaveV10"); 
-                    playerName = ""; alliancePartner = null; stones = 0; gems = 0; totalStonesMined = 0; damage = 1; workers = 0;
+                    playerName = ""; playerPassword = ""; alliancePartner = null; stones = 0; gems = 0; totalStonesMined = 0; damage = 1; workers = 0;
                     workersEnabled = true; level = 1; currentExp = 0; maxHealth = 10; health = maxHealth;
                     powerCost = 50; workerCost = 100; activeTitle = "بلا لقب ⚒️"; unlockedTitles = ["بلا لقب ⚒️"];
                     activeSkin = "الأساسي"; purchasedSkins = ["الأساسي"]; totalCrits = 0; totalLegendsFound = 0;
                     boss1Defeated = false; boss2Defeated = false; boss3Defeated = false; boss4Defeated = false;
                     goblinDefeated = false; activeEnergyDrinkTime = 0; hasLuckScroll = false;
 
+                    // مسح اللاعب تماماً من الداتا بيز عشان ما يبانش 0 في الليدربورد
                     if (oldName) {
                         try {
-                            await supabaseClient.from('players').upsert({ username: oldName, score: 0, coins: 0, alliance: null, updated_at: new Date() });
-                        } catch(e) {}
+                            await supabaseClient.from('players').delete().eq('username', oldName);
+                        } catch(e) { console.error("Error deleting from DB", e); }
                     }
 
                     closeAllModals();
                     miner.src = "assets/miner.png";
                     document.getElementById("playerNameInput").value = "";
+                    document.getElementById("playerPasswordInput").value = "";
                     document.getElementById("nameModal").style.display = "flex";
                     document.getElementById("nameErrorMsg").style.display = "none";
                     
@@ -1047,42 +1079,99 @@
                 update();
             }
 
+            // نظام التسجيل المطور
+            window.switchAuthMode = function(mode) {
+                authMode = mode;
+                document.getElementById("tabLogin").classList.remove("active");
+                document.getElementById("tabRegister").classList.remove("active");
+                document.getElementById("nameErrorMsg").style.display = "none";
+                
+                if(mode === 'login') {
+                    document.getElementById("tabLogin").classList.add("active");
+                    document.getElementById("saveNameBtn").innerText = "تسجيل الدخول 🚀";
+                } else {
+                    document.getElementById("tabRegister").classList.add("active");
+                    document.getElementById("saveNameBtn").innerText = "إنشاء حساب 📝";
+                }
+            };
+
             document.getElementById("saveNameBtn").onclick = async function() {
-                let inputVal = document.getElementById("playerNameInput").value.trim();
+                let inputName = document.getElementById("playerNameInput").value.trim();
+                let inputPass = document.getElementById("playerPasswordInput").value.trim();
                 let errorBox = document.getElementById("nameErrorMsg");
-                if(inputVal === "") {
-                    alert("الرجاء إدخال اسم صحيح لتبدأ اللعبة!");
+                
+                if(inputName === "" || inputPass === "") {
+                    errorBox.innerText = "❌ الرجاء إدخال الاسم وكلمة المرور!";
+                    errorBox.style.display = "block";
                     return;
                 }
                 
                 document.getElementById("saveNameBtn").disabled = true;
-                document.getElementById("saveNameBtn").innerText = "جاري التحقق من الاسم... 🔄";
+                document.getElementById("saveNameBtn").innerText = "جاري التحقق... 🔄";
+                errorBox.style.display = "none";
 
                 try {
                     const { data, error } = await supabaseClient
                         .from('players')
-                        .select('username')
-                        .eq('username', inputVal);
+                        .select('username, password')
+                        .eq('username', inputName);
 
-                    if (!error && data && data.length > 0) {
-                        errorBox.innerText = "❌ هذا الاسم محجوز للاعب آخر، اختر اسماً فريداً!";
-                        errorBox.style.display = "block";
-                        document.getElementById("saveNameBtn").disabled = false;
-                        document.getElementById("saveNameBtn").innerText = "ابدأ اللعب 🚀";
-                        return;
+                    let userExists = (data && data.length > 0);
+
+                    if (authMode === "register") {
+                        if (userExists) {
+                            errorBox.innerText = "❌ هذا الاسم موجود بالفعل، اختر اسماً آخر أو قم بتسجيل الدخول.";
+                            errorBox.style.display = "block";
+                            resetAuthBtn();
+                            return;
+                        }
+                    } else if (authMode === "login") {
+                        if (!userExists) {
+                            errorBox.innerText = "❌ الحساب غير موجود! تأكد من الاسم أو قم بإنشاء حساب جديد.";
+                            errorBox.style.display = "block";
+                            resetAuthBtn();
+                            return;
+                        } else {
+                            // لو فيه باسورد في الداتا بيز، هنقارن بيه. 
+                            // لو مفيش (عشان لسه معملتوش العمود في سوبابيز)، هنعتمد على الحفظ المحلي مؤقتاً
+                            let dbPass = data[0].password;
+                            let localData = JSON.parse(localStorage.getItem("rockMinerSaveV10"));
+                            
+                            if (dbPass) {
+                                if (dbPass !== inputPass) {
+                                    errorBox.innerText = "❌ كلمة المرور غير صحيحة!";
+                                    errorBox.style.display = "block";
+                                    resetAuthBtn();
+                                    return;
+                                }
+                            } else {
+                                // للتحقق المحلي في حالة لم يتم تحديث قاعدة البيانات بعد
+                                if (localData && localData.playerName === inputName && localData.playerPassword !== inputPass) {
+                                    errorBox.innerText = "❌ كلمة المرور غير صحيحة!";
+                                    errorBox.style.display = "block";
+                                    resetAuthBtn();
+                                    return;
+                                }
+                            }
+                        }
                     }
                 } catch(e) {
-                    console.log("خطأ في الاتصال بفحص الأسماء، سيتم تخطي الفحص محلياً.");
+                    console.log("خطأ في الاتصال بالداتا بيز، الاعتماد على التخزين المحلي.");
                 }
 
-                playerName = inputVal;
+                playerName = inputName;
+                playerPassword = inputPass;
                 document.getElementById("nameModal").style.display = "none";
-                document.getElementById("saveNameBtn").disabled = false;
-                document.getElementById("saveNameBtn").innerText = "ابدأ اللعب 🚀";
+                resetAuthBtn();
                 applyPlayerNameFeature();
                 setupRealtimeConnection();
                 update();
             };
+
+            function resetAuthBtn() {
+                document.getElementById("saveNameBtn").disabled = false;
+                document.getElementById("saveNameBtn").innerText = authMode === 'login' ? "تسجيل الدخول 🚀" : "إنشاء حساب 📝";
+            }
 
             function applyPlayerNameFeature() {
                 const namePlate = document.getElementById("playerNamePlate");
@@ -1221,9 +1310,11 @@
                 document.getElementById("leaderboardTable").style.display = "none";
                 
                 try {
+                    // تم التعديل لجلب السكورات الأكبر من 0 فقط، لمنع ظهور المصفّرين
                     const { data, error } = await supabaseClient
                         .from('players')
                         .select('username, score')
+                        .gt('score', 0)
                         .order('score', { ascending: false })
                         .limit(10);
 
@@ -1368,10 +1459,12 @@
             async function syncWithSupabase() {
                 if (!playerName || playerName === "") return;
                 try {
+                    // الكود جاهز للتعامل مع الباسورد، إذا لم تقم بإنشاء العمود لن يحدث شيء خطير للعبة، ولكن يفضل إضافته.
                     await supabaseClient
                         .from('players')
                         .upsert({ 
                             username: playerName, 
+                            password: playerPassword,
                             score: totalStonesMined, 
                             coins: Math.floor(stones),
                             alliance: alliancePartner, 
@@ -1797,6 +1890,7 @@
                 }
             };
 
+            // تعديل دالة دعوة التحالف لتكون أكثر دقة
             window.sendAllianceInvite = async function() {
                 const target = document.getElementById("allianceTargetInput").value.trim();
                 if (!target) { alert("اكتب اسم اللاعب أولاً!"); return; }
@@ -1806,10 +1900,10 @@
                     const { data, error } = await supabaseClient
                         .from('players')
                         .select('username, alliance')
-                        .ilike('username', target);
+                        .eq('username', target); // استخدام eq بدل ilike لضمان عدم وجود أخطاء في البحث
 
                     if (error || !data || data.length === 0) {
-                        alert("❌ هذا اللاعب غير موجود أو لم يسبق له تسجيل الدخول باللعبة مطلقاً!");
+                        alert("❌ هذا اللاعب غير موجود أو لم يسبق له تسجيل الدخول باللعبة مطلقاً! تأكد من كتابة اسمه بالظبط.");
                         return;
                     }
 
@@ -2073,7 +2167,7 @@
             function saveGame() {
                 if(isBossActive || activeEvent !== null || playerName === "") return;
                 localStorage.setItem("rockMinerSaveV10", JSON.stringify({
-                    playerName, alliancePartner, stones, gems, totalStonesMined, damage, workers, workersEnabled, level, currentExp, maxHealth, powerCost, workerCost, activeTitle, unlockedTitles, activeSkin, purchasedSkins,
+                    playerName, playerPassword, alliancePartner, stones, gems, totalStonesMined, damage, workers, workersEnabled, level, currentExp, maxHealth, powerCost, workerCost, activeTitle, unlockedTitles, activeSkin, purchasedSkins,
                     totalCrits, totalLegendsFound, boss1Defeated, boss2Defeated, boss3Defeated, boss4Defeated, goblinDefeated,
                     activeEnergyDrinkTime, hasLuckScroll
                 }));
@@ -2082,7 +2176,9 @@
             function loadGame() {
                 const data = JSON.parse(localStorage.getItem("rockMinerSaveV10"));
                 if (data) {
-                    playerName = data.playerName || ""; alliancePartner = data.alliancePartner || null; stones = data.stones || 0; gems = data.gems || 0; totalStonesMined = data.totalStonesMined || 0;
+                    playerName = data.playerName || ""; 
+                    playerPassword = data.playerPassword || "";
+                    alliancePartner = data.alliancePartner || null; stones = data.stones || 0; gems = data.gems || 0; totalStonesMined = data.totalStonesMined || 0;
                     damage = data.damage || 1; workers = data.workers || 0; workersEnabled = data.workersEnabled !== undefined ? data.workersEnabled : true;
                     level = data.level || 1; currentExp = data.currentExp || 0; maxHealth = data.maxHealth || 10; health = maxHealth;
                     powerCost = data.powerCost || 50; workerCost = data.workerCost || 100; activeTitle = data.activeTitle || "بلا لقب ⚒️";
