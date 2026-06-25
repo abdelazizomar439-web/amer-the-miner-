@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Amer The Miner - Legendary Master Edition</title>
+    <title>Amer The Miner - Leaderboard & Secure Live Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-family: Tahoma, sans-serif;
             background: url("assets/background.png") no-repeat center center fixed;
             background-size: cover;
             user-select: none;
@@ -34,23 +34,21 @@
         }
 
         .box {
-            width: 160px;
-            background: rgba(45, 22, 10, 0.85);
-            backdrop-filter: blur(10px);
+            width: 150px;
+            background: linear-gradient(145deg, #4b2a13, #2d160a);
             color: white;
             padding: 12px;
-            border-radius: 16px;
+            border-radius: 15px;
             text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            border: 1px solid #7b4a22;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .5);
             transition: .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .box:hover { transform: scale(1.05); border-color: gold; }
+        .box:hover { transform: scale(1.05); }
 
         .level-box { position: relative; cursor: pointer; }
         .level-box:hover {
-            transform: scale(1.08);
+            transform: scale(1.15);
             box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
         }
 
@@ -58,17 +56,10 @@
             display: block;
             font-size: 26px;
             font-weight: bold;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .box small {
-            font-size: 12px;
-            color: #ddb088;
-            font-weight: bold;
         }
 
         #activeTitleDisplay {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: bold;
             color: #ffcc00;
             margin-top: 4px;
@@ -78,13 +69,13 @@
         .exp-container {
             width: 100%;
             height: 8px;
-            background: #111;
+            background: #222;
             border-radius: 4px;
             margin-top: 8px;
             overflow: hidden;
             opacity: 0;
             max-height: 0;
-            transition: opacity 0.3s, max-height 0.3s;
+            transition: opacity 0.3s, max-height 0.3s, margin 0.3s;
         }
 
         .level-box:hover .exp-container {
@@ -100,14 +91,13 @@
         }
 
         .event-timer-container {
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.4);
             padding: 6px;
             border-radius: 10px;
-            border: 1px solid #ffcc00;
+            border: 1px solid #7b4a22;
             color: #ffcc00;
             font-size: 11px;
             text-align: center;
-            margin-top: 5px;
         }
         .event-mini-bar {
             width: 100%;
@@ -135,7 +125,6 @@
             margin-top: 5px;
             cursor: pointer;
             width: 100%;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         .worker-toggle-btn.stopped {
             background: linear-gradient(145deg, #c0392b, #962d22);
@@ -154,13 +143,12 @@
         }
 
         .bar-bg {
-            width: 380px;
-            height: 30px;
-            background: rgba(0,0,0,0.6);
+            width: 350px;
+            height: 28px;
+            background: #222;
             border-radius: 20px;
             overflow: hidden;
-            border: 2px solid #5a3418;
-            box-shadow: 0 0 15px rgba(0, 0, 0, .6);
+            box-shadow: 0 0 10px rgba(0, 0, 0, .5);
         }
 
         #healthBar {
@@ -175,7 +163,7 @@
         .big-boss-health-bar { background: linear-gradient(90deg, #ff00ea, #4a00e0) !important; }
 
         #bossTimer {
-            font-size: 26px;
+            font-size: 24px;
             color: #ff3333;
             font-weight: bold;
             text-shadow: 0 0 10px black;
@@ -184,15 +172,15 @@
         }
 
         #eventBanner {
-            background: rgba(155, 89, 182, 0.9);
+            background: rgba(155, 89, 182, 0.85);
             color: gold;
             font-weight: bold;
-            padding: 6px 18px;
-            border-radius: 12px;
+            padding: 5px 15px;
+            border-radius: 10px;
             margin-top: 8px;
             font-size: 16px;
             display: none;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
             animation: pulseGlow 1s infinite alternate;
         }
 
@@ -200,7 +188,7 @@
             position: absolute;
             right: 20px;
             bottom: 20px;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.8);
             border: 2px solid gold;
             border-radius: 12px;
             padding: 10px 15px;
@@ -211,7 +199,7 @@
             font-weight: bold;
             font-size: 16px;
             z-index: 100;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
             display: none;
         }
         #notifierTimer { color: #ff3333; font-size: 18px; }
@@ -233,31 +221,29 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            transition: left 0.5s ease;
         }
 
         .player-name-plate {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
             color: #fff;
-            background: rgba(0, 0, 0, 0.75);
-            padding: 5px 12px;
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 4px 10px;
+            border-radius: 8px;
             border: 1px solid #7b4a22;
             margin-bottom: 8px;
             text-shadow: 0 2px 4px black;
             white-space: nowrap;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
 
         .admin-name {
             color: gold !important;
             border-color: gold !important;
-            box-shadow: 0 0 15px gold;
+            box-shadow: 0 0 10px gold;
             animation: pulseGlow 1.5s infinite alternate;
         }
         @keyframes pulseGlow {
-            from { box-shadow: 0 0 5px gold; } to { box-shadow: 0 0 18px gold; }
+            from { box-shadow: 0 0 5px gold; } to { box-shadow: 0 0 15px gold; }
         }
 
         #miner {
@@ -286,11 +272,11 @@
             filter: brightness(1.3);
         }
 
-        /* ===== الأرقام الطائرة ===== */
+        /* ===== الأرقام الطائرة الخارقة ===== */
         .floating-damage {
             position: fixed;
             pointer-events: none;
-            font-size: 30px;
+            font-size: 28px;
             font-weight: bold;
             text-shadow: 2px 2px 4px black;
             z-index: 9999;
@@ -299,7 +285,7 @@
 
         @keyframes flyUpAndFade {
             0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-90px) scale(1.25); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1.2); }
         }
 
         /* ===== الأزرار الجانبية العلوية ===== */
@@ -314,19 +300,18 @@
 
         .menu-btn {
             padding: 12px 18px;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
-            background: rgba(75, 42, 19, 0.85);
-            backdrop-filter: blur(5px);
+            background: linear-gradient(145deg, #4b2a13, #2d160a);
             color: white;
             border: 2px solid #7b4a22;
-            border-radius: 14px;
+            border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 6px 16px rgba(0,0,0,.4);
+            box-shadow: 0 5px 15px rgba(0,0,0,.4);
             transition: .2s;
         }
 
-        .menu-btn:hover { transform: translateY(-3px); border-color: gold; box-shadow: 0 8px 20px rgba(0,0,0,.6); }
+        .menu-btn:hover { transform: scale(1.05); }
 
         #adminBtnToggle {
             background: linear-gradient(145deg, #da1b1b, #ffd700);
@@ -345,103 +330,84 @@
             border-color: #f1c40f;
         }
 
-        /* ===== النوافذ المنبثقة السوبر ميرك ===== */
+        /* ===== النوافذ المنبثقة ===== */
         .popup-modal {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 420px;
-            max-height: 80vh; 
-            background: rgba(30, 14, 6, 0.95);
-            backdrop-filter: blur(15px);
+            width: 365px;
+            max-height: 75vh; 
+            background: linear-gradient(145deg, #4b2a13, #2d160a);
             color: white;
-            padding: 25px;
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0,0,0,.85);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,.7);
             z-index: 100;
             display: none;
             border: 3px solid #7b4a22;
             overflow-y: auto; 
             box-sizing: border-box;
-            animation: modalFadeIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         .popup-modal::-webkit-scrollbar { width: 8px; }
-        .popup-modal::-webkit-scrollbar-track { background: #1e0e06; border-radius: 10px; }
-        .popup-modal::-webkit-scrollbar-thumb { background: #7b4a22; border-radius: 10px; border: 1px solid gold; }
+        .popup-modal::-webkit-scrollbar-track { background: #2d160a; border-radius: 10px; }
+        .popup-modal::-webkit-scrollbar-thumb { background: #7b4a22; border-radius: 10px; }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #5a3418;
-            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
-
-        .modal-header h2 { font-size: 20px; margin: 0; color: #ffcc00; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
         .close-btn {
             background: none;
             border: none;
             color: #ff4a4a;
-            font-size: 32px;
+            font-size: 30px;
             cursor: pointer;
-            transition: .2s;
         }
-        .close-btn:hover { transform: scale(1.2); color: red; }
 
         .popup-modal button:not(.close-btn) {
             width: 100%;
             margin-top: 12px;
-            padding: 14px;
+            padding: 12px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: .2s;
         }
 
-        .shop-btn { background: linear-gradient(145deg, #5dc84f, #3b992e); display: block; text-align: center; text-decoration: none;}
-        .shop-btn:hover { background: linear-gradient(145deg, #4eb041, #2d7821); transform: translateY(-2px); }
-        .shop-btn:disabled { background: #444 !important; color: #888 !important; cursor: not-allowed; transform: none !important; box-shadow: none; }
+        .shop-btn { background: #5dc84f; display: block; text-align: center; text-decoration: none;}
+        .shop-btn:hover { background: #4eb041; transform: scale(1.02); }
         .shop-premium-btn { background: linear-gradient(145deg, #00c4ff, #0076a8) !important; }
         .shop-premium-btn:hover { background: linear-gradient(145deg, #0099cc, #00597f) !important; }
 
         .admin-action-btn { background: linear-gradient(90deg, #e74c3c, #c0392b) !important; margin-bottom: 5px; }
-        .admin-action-btn:hover { filter: brightness(1.2); }
 
         .list-card {
             position: relative;
-            background: rgba(0,0,0,0.6);
-            padding: 16px;
-            border-radius: 14px;
-            margin-bottom: 15px;
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 12px;
             border: 1px solid #5a3418;
             text-align: center;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-            transition: 0.3s;
+            transition: 0.2s;
         }
-        .list-card:hover { border-color: gold; }
-        .list-card h3 { margin: 0 0 6px 0; font-size: 17px; color: #ffcc00; }
         
         .title-perk-tooltip {
             display: none;
             background: #111;
             color: #00ffcc;
             font-size: 13px;
-            padding: 10px;
-            border-radius: 10px;
-            margin-top: 8px;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 5px;
             border: 1px dashed #7b4a22;
             text-align: right;
             animation: fadeIn 0.3s forwards;
@@ -452,11 +418,11 @@
         .ach-progress-container {
             width: 100%;
             height: 10px;
-            background: #222;
+            background: #333;
             border-radius: 5px;
             margin-top: 6px;
             overflow: hidden;
-            border: 1px solid #444;
+            border: 1px solid #555;
         }
         .ach-progress-bar {
             height: 100%;
@@ -468,59 +434,52 @@
             font-size: 11px;
             color: #ffb300;
             text-align: left;
-            margin-top: 4px;
+            margin-top: 3px;
             display: block;
         }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .list-card p { margin: 5px 0; font-size: 14px; color: #ddd; }
         
-        .action-btn { background: linear-gradient(145deg, #ff3333, #bd2121); }
-        .action-btn:disabled { background: #444 !important; cursor: not-allowed; opacity: 0.5; transform: none !important; }
+        .action-btn { background: #ff3333; }
+        .action-btn:disabled { background: #555 !important; cursor: not-allowed; opacity: 0.6; }
 
-        .title-equip-btn { background: linear-gradient(145deg, #2196F3, #1565C0); }
-        .title-equip-btn.equipped { background: linear-gradient(145deg, #9c27b0, #6a1b9a) !important; box-shadow: 0 0 10px #9c27b0; }
-        .title-equip-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
+        .title-equip-btn { background: #2196F3; }
+        .title-equip-btn.equipped { background: #9c27b0 !important; }
 
         .admin-input-field {
-            width: 95%;
-            padding: 10px;
-            margin-bottom: 12px;
-            border-radius: 8px;
+            width: 90%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 6px;
             border: 1px solid gold;
             background: #111;
             color: white;
             text-align: center;
-            font-size: 14px;
-            box-sizing: border-box;
         }
 
-        /* ===== ستايل جدول لوحة المتصدرين الفخم ===== */
+        /* ===== ستايل جدول لوحة المتصدرين ===== */
         .leaderboard-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
+            margin-top: 10px;
             font-size: 14px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .leaderboard-table th, .leaderboard-table td {
-            padding: 12px;
+            padding: 10px;
             text-align: center;
-            border-bottom: 1px solid #42210b;
+            border-bottom: 1px solid #5a3418;
         }
         .leaderboard-table th {
             background-color: #2d160a;
             color: gold;
-            font-weight: bold;
         }
-        .leaderboard-table tr { background-color: rgba(0, 0, 0, 0.3); }
-        .leaderboard-table tr:nth-child(even) { background-color: rgba(0, 0, 0, 0.5); }
-        .leaderboard-table tr:hover { background-color: rgba(123, 74, 34, 0.5); }
-        .rank-1 { color: #ffe700; font-weight: bold; text-shadow: 0 0 8px rgba(255,231,0,0.5); }
-        .rank-2 { color: #dfdfdf; font-weight: bold; }
-        .rank-3 { color: #df9e5f; font-weight: bold; }
+        .leaderboard-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        .rank-1 { color: gold; font-weight: bold; }
+        .rank-2 { color: #ddd; font-weight: bold; }
+        .rank-3 { color: #cd7f32; font-weight: bold; }
 
         /* ===== الجوائز والأنيميشن ===== */
         #rewardText {
@@ -532,12 +491,12 @@
             font-weight: bold;
             opacity: 0;
             z-index: 50;
-            text-shadow: 0 3px 6px black;
+            text-shadow: 0 3px 5px black;
         }
         .rewardAnim { animation: floatUp 1.2s forwards; }
         @keyframes floatUp {
             0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -130px) scale(1.35); }
+            100% { opacity: 0; transform: translate(-50%, -120px) scale(1.3); }
         }
 
         #legendReward {
@@ -548,135 +507,97 @@
             font-size: 70px;
             font-weight: bold;
             color: gold;
-            text-shadow: 0 0 20px gold, 0 4px 10px black;
+            text-shadow: 0 0 20px gold;
             opacity: 0;
             z-index: 100;
             pointer-events: none;
         }
         .legendShow { animation: legendAnim 2s forwards; }
-        @keyframes legendAnim {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-            30% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
-        }
 
         #mineBtn {
             position: absolute;
             left: 50%;
             bottom: 20px;
             transform: translateX(-50%);
-            padding: 18px 50px;
-            font-size: 24px;
-            font-weight: bold;
+            padding: 18px 40px;
+            font-size: 22px;
             border: none;
-            border-radius: 18px;
+            border-radius: 15px;
             background: linear-gradient(145deg, #7b4a22, #5a3418);
             color: white;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, .6), inset 0 2px 5px rgba(255,255,255,0.2);
-            border: 1px solid #94592d;
-            transition: .2s;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, .4);
             touch-action: manipulation;
         }
-        #mineBtn:hover { transform: translateX(-50%) scale(1.03); background: linear-gradient(145deg, #8c5529, #663c1c); box-shadow: 0 12px 30px rgba(0, 0, 0, .7); }
-        #mineBtn:active { transform: translateX(-50%) scale(0.97); }
 
-        /* ===== نظام تسجيل الدخول الجديد ===== */
         .name-modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.85);
             z-index: 500;
             display: flex;
             justify-content: center;
             align-items: center;
         }
         .name-box {
-            background: rgba(45, 22, 10, 0.95);
+            background: linear-gradient(145deg, #4b2a13, #2d160a);
             padding: 30px;
-            border-radius: 24px;
+            border-radius: 20px;
             border: 3px solid #7b4a22;
             text-align: center;
             color: white;
-            width: 340px;
-            box-shadow: 0 15px 40px black;
-        }
-        .auth-tabs {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #5a3418;
-            padding-bottom: 10px;
-        }
-        .auth-tabs button {
-            background: none;
-            border: none;
-            color: #aaa;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 5px 10px;
-            transition: 0.3s;
-        }
-        .auth-tabs button.active {
-            color: gold;
-            border-bottom: 2px solid gold;
+            width: 300px;
+            box-shadow: 0 10px 30px black;
         }
         .name-input {
             width: 90%;
-            padding: 12px;
-            margin-top: 10px;
-            border-radius: 10px;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 8px;
             border: 2px solid #7b4a22;
             background: #111;
             color: white;
             font-size: 16px;
             text-align: center;
-            box-sizing: border-box;
         }
-        .name-input:focus { border-color: gold; outline: none; }
         .name-submit {
-            background: linear-gradient(145deg, #5dc84f, #3b992e);
+            background: #5dc84f;
             color: white;
-            padding: 12px 20px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 10px;
-            margin-top: 18px;
+            border-radius: 8px;
+            margin-top: 15px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             width: 100%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: .2s;
         }
-        .name-submit:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-        /* ===== ميديا كويري للهواتف الذكية ===== */
+        /* ===== ميديا كويري للهواتف ===== */
         @media(max-width:768px) {
             body { overflow: hidden; }
             .hud { left: 10px; top: 10px; gap: 5px; }
-            .box { width: 105px; padding: 6px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
-            .box span { font-size: 17px; }
-            .box small { font-size: 9px; }
-            #activeTitleDisplay { font-size: 9px; }
-            .event-timer-container { font-size: 8px; padding: 3px; }
-            .worker-toggle-btn { padding: 3px; font-size: 9px; margin-top: 3px; }
+            .box { width: 100px; padding: 6px; border-radius: 8px; }
+            .box span { font-size: 16px; }
+            .box small { font-size: 10px; }
+            #activeTitleDisplay { font-size: 10px; }
+            .event-timer-container { font-size: 9px; padding: 3px; }
+            .worker-toggle-btn { padding: 3px; font-size: 10px; }
             .menu-buttons { right: 10px; top: 10px; display: flex; flex-direction: column; gap: 5px; }
-            .menu-btn { padding: 8px 10px; font-size: 11px; border-radius: 10px; text-align: center; width: 95px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-            .health { top: auto; bottom: 250px; left: 50%; width: 92%; }
-            .bar-bg { width: 100%; height: 22px; }
-            .health h2 { font-size: 15px; margin: 2px 0; text-shadow: 0 2px 4px black; }
-            .health h3 { font-size: 13px; margin: 2px 0; }
+            .menu-btn { padding: 6px 10px; font-size: 12px; border-radius: 8px; text-align: center; width: 90px; }
+            .health { top: auto; bottom: 240px; left: 50%; width: 90%; }
+            .bar-bg { width: 100%; height: 20px; }
+            .health h2 { font-size: 16px; margin: 2px 0; }
+            .health h3 { font-size: 14px; margin: 2px 0; }
             .world { height: 320px; bottom: 80px; }
             .miner-container { width: 90px; left: 10px; bottom: 10px; }
-            .player-name-plate { font-size: 11px; padding: 3px 8px; border-radius: 6px; }
-            #rock { width: 210px; max-height: 210px; bottom: 10px; }
-            #mineBtn { padding: 14px 30px; font-size: 18px; bottom: 15px; width: 85%; text-align: center; border-radius: 14px; }
-            .popup-modal { width: 92%; max-height: 82vh; padding: 18px; border-radius: 20px; }
-            #rewardText { font-size: 38px; bottom: 195px; }
+            .player-name-plate { font-size: 11px; padding: 2px 6px; }
+            #rock { width: 200px; max-height: 200px; bottom: 10px; }
+            #mineBtn { padding: 12px 30px; font-size: 18px; bottom: 15px; width: 80%; text-align: center; }
+            .popup-modal { width: 90%; max-height: 85vh; padding: 15px; }
+            #rewardText { font-size: 35px; bottom: 180px; }
             #legendReward { font-size: 45px; }
-            .bottom-right-notifier { right: auto; left: 10px; bottom: 85px; padding: 6px 12px; font-size: 12px; }
+            .bottom-right-notifier { right: auto; left: 10px; bottom: 80px; padding: 6px 10px; font-size: 12px; }
         }
     </style>
 </head>
@@ -686,14 +607,9 @@
     <div class="name-modal" id="nameModal">
         <div class="name-box">
             <h2>مرحباً بك يا بطل! ⛏️</h2>
-            <div class="auth-tabs">
-                <button id="tabLogin" class="active" onclick="switchAuthMode('login')">تسجيل الدخول</button>
-                <button id="tabRegister" onclick="switchAuthMode('register')">حساب جديد</button>
-            </div>
-            <div id="nameErrorMsg" style="color: #ff4a4a; font-size: 13px; font-weight: bold; margin-bottom: 10px; display: none;"></div>
-            <input type="text" class="name-input" id="playerNameInput" placeholder="اسم اللاعب..." maxlength="15">
-            <input type="password" class="name-input" id="playerPasswordInput" placeholder="كلمة المرور..." maxlength="20">
-            <button class="name-submit" id="saveNameBtn">دخول 🚀</button>
+            <p>أدخل اسمك لتبدأ رحلة التنقيب الأسطورية:</p>
+            <input type="text" class="name-input" id="playerNameInput" placeholder="اكتب اسمك هنا..." maxlength="15">
+            <button class="name-submit" id="saveNameBtn">ابدأ اللعب 🚀</button>
         </div>
     </div>
 
@@ -712,7 +628,7 @@
                 <div id="expBar"></div>
             </div>
             <div class="event-timer-container">
-                <span id="eventCountdownLabel">حدث قادم:</span> <span id="eventCountdownText">10:00</span>
+                حدث قادم: <span id="eventCountdownText">10:00</span>
                 <div class="event-mini-bar"><div id="eventMiniBarFill"></div></div>
             </div>
         </div>
@@ -720,7 +636,6 @@
 
     <div class="menu-buttons">
         <button class="menu-btn" id="adminBtnToggle">🛠️ لوحة الأدمن</button>
-        <button class="menu-btn" id="allianceBtnToggle" style="background: linear-gradient(145deg, #2e4053, #1a252f);">🤝 التحالفات</button>
         <button class="menu-btn" id="leaderboardBtnToggle">🏆 المتصدرين</button>
         <button class="menu-btn" id="resetBtnToggle" onclick="resetEntireProgress()">⚠️ تصفير</button>
         <button class="menu-btn" id="skinsBtnToggle" style="background: linear-gradient(145deg, #9b59b6, #4a235a);">👕 السكنات</button>
@@ -752,11 +667,6 @@
             <div class="player-name-plate" id="playerNamePlate">لاعب جديد</div>
             <img src="assets/miner.png" id="miner" alt="Miner">
         </div>
-
-        <div class="miner-container" id="allyContainer" style="display: none; left: 25%; transform: scaleX(-1);">
-            <div class="player-name-plate" id="allyNamePlate" style="transform: scaleX(-1);">حليف</div>
-            <img src="assets/miner.png" id="allyMiner" alt="Ally Miner">
-        </div>
         
         <img src="assets/rock.png" id="rock" alt="Rock">
         <div id="rewardText"></div>
@@ -765,21 +675,13 @@
 
     <button id="mineBtn">اضغط للتكسير ⛏️</button>
 
-    <div class="popup-modal" id="allianceModal">
-        <div class="modal-header">
-            <h2>🤝 نظام التحالفات الأسطورية</h2>
-            <button class="close-btn" onclick="closeAllModals()">&times;</button>
-        </div>
-        <div id="allianceStatusContent"></div>
-    </div>
-
     <div class="popup-modal" id="leaderboardModal">
         <div class="modal-header">
-            <h2>🏆 لوحة الصدارة العالمية</h2>
+            <h2>🏆 لوحة صدارة منجم عامر العالمي</h2>
             <button class="close-btn" onclick="closeAllModals()">&times;</button>
         </div>
-        <p style="text-align:center; font-size:13px; color: #ffcc00; margin-top: 0;">أعلى 10 لاعبين تنقيباً في السيرفر لايف:</p>
-        <div id="leaderboardLoading" style="text-align:center; margin: 20px 0; color:cyan; font-weight: bold;">جاري تحميل لوحة الصدارة... 🔄</div>
+        <p style="text-align:center; font-size:12px; color: #ffcc00;">أعلى 10 لاعبين تنقيباً في السيرفر لايف:</p>
+        <div id="leaderboardLoading" style="text-align:center; margin: 10px 0; color:cyan;">جاري تحميل لوحة الصدارة... 🔄</div>
         <table class="leaderboard-table" id="leaderboardTable" style="display:none;">
             <thead>
                 <tr>
@@ -788,7 +690,8 @@
                     <th>إجمالي الحفر 🪨</th>
                 </tr>
             </thead>
-            <tbody id="leaderboardRows"></tbody>
+            <tbody id="leaderboardRows">
+                </tbody>
         </table>
     </div>
 
@@ -856,14 +759,6 @@
         </div>
         <p style="text-align:center; color:#ffcc00;">أهلاً بك يا بابا عمر، تحكّم باللعبة بالكامل:</p>
         
-        <div class="list-card" style="border: 1px solid lime;">
-            <h3 style="color: lime; margin: 5px 0;">🎁 إرسال عملات وجواهر للاعب معين</h3>
-            <input type="text" id="adminTargetPlayer" class="admin-input-field" placeholder="اسم اللاعب بالظبط...">
-            <input type="number" id="adminGiftStones" class="admin-input-field" placeholder="عدد الأحجار المضافة">
-            <input type="number" id="adminGiftGems" class="admin-input-field" placeholder="عدد الجواهر المضافة">
-            <button class="admin-action-btn" style="background: #27ae60 !important;" id="admGiftBtn">⚡ إرسال الهدية فوراً</button>
-        </div>
-
         <div class="list-card" style="border: 1px solid gold;">
             <input type="text" id="adminMsgInput" class="admin-input-field" placeholder="اكتب رسالة للاعبين هنا...">
             <button class="admin-action-btn" style="background: #27ae60 !important;" id="admSendMsgBtn">📢 بث الرسالة لايف</button>
@@ -883,16 +778,28 @@
     </div>
 
     <script>
+        // حماية أمنية 1: منع كليك يمين واختصارات المتصفح الشهيرة لـ F12 و Inspect Element
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.addEventListener('keydown', event => {
-            if (event.keyCode === 123) { event.preventDefault(); return false; }
-            if (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 74 || event.keyCode === 67)) { event.preventDefault(); return false; }
-            if (event.ctrlKey && event.keyCode === 85) { event.preventDefault(); return false; }
+            if (event.keyCode === 123) { // F12
+                event.preventDefault();
+                return false;
+            }
+            if (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 74 || event.keyCode === 67)) { 
+                event.preventDefault();
+                return false;
+            }
+            if (event.ctrlKey && event.keyCode === 85) { 
+                event.preventDefault();
+                return false;
+            }
         });
 
+        // حماية أمنية 2: عزل كل الكود الحساس داخل Scope مغلق تماماً لمنع استدعائه من الـ Console
         (function() {
+            // كود الاتصال بـ Supabase
             const SUPABASE_URL = 'https://pwmpugkyuwzfaegcqubf.supabase.co'; 
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bXB1Z2t5dXd6ZmFlZ2NxdWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDU5MDksImV4cCI6MjA5NzkyMTkwOX0.l2BfJPUFynRfoEy4jWVB9Mc2CgwdLDKvQTO77fDh6L4'; 
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bXB1Z2t5dXd6ZmFlZ2NxdWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDU5MDksImV4cCI6MjA5NzkyMTkwOX0.l2BfJPUFynRfoEy4jWVB9Mc2CgwdLDKvQTO77fDh6L4'; // ضع الـ Anon key الخاص بك هنا
 
             const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             let liveChannel = null;
@@ -908,9 +815,6 @@
             Object.values(sounds).forEach(sound => sound.volume = 0.4);
 
             let playerName = "";
-            let playerPassword = "";
-            let authMode = "login"; // "login" or "register"
-            let alliancePartner = null; 
             let stones = 0;
             let gems = 0; 
             let totalStonesMined = 0; 
@@ -945,6 +849,7 @@
             let activeSkin = "الأساسي";
             let purchasedSkins = ["الأساسي"];
 
+            // 4. تعديل بافات سكن الزعيم السري ليعطي +20% هجوم، وسرعة عمال 15% ومكافأة أحجار
             const skinsData = [
                 { id: "leader", name: "عم زعامه 😎", cost: 100, file: "assets/leader.png", perk: "الميزة: يمنحك +10% فرصة ضربة حرجة (Crit Chance)." },
                 { id: "gang", name: "الجنج 💵", cost: 100, file: "assets/gang.png", perk: "الميزة: زيادة الأرباح بنسبة x1.2 للأحجار العادية." },
@@ -971,6 +876,7 @@
                 { id: "boss_2_ach", name: "سارق الكريستال المشع 💎", desc: "اهزم صخرة الكريستال المشعة", title: "جامع البلورات 💎", color: "#9b59b6", perkText: "الميزة: ضربات العمال التلقائية تصبح أسرع بمقدار 20%.", check: () => boss2Defeated, getProgress: () => ({ current: boss2Defeated ? 1 : 0, target: 1 }) },
                 { id: "boss_3_ach", name: "محطم الآثار القديمة 🤖", desc: "اهزم حارس المناجم القديم", title: "صائد الغولم 🤖", color: "#34495e", perkText: "الميزة: ضربات العمال التلقائية تعطي قوة دبل (Double Damage).", check: () => boss3Defeated, getProgress: () => ({ current: boss3Defeated ? 1 : 0, target: 1 }) },
                 { id: "boss_4_ach", name: "مطفئ النيازك المشتعلة ☄️", desc: "اهزم صخرة النيزك المشتعلة", title: "ملك الفضاء ☄️", color: "#e74c3c", perkText: "الميزة: مضاعفة جميع الأحجار المجمعة من أي صخرة مرتين (x2 Stones)!", check: () => boss4Defeated, getProgress: () => ({ current: boss4Defeated ? 1 : 0, target: 1 }) },
+                // 1. إضافة إنجاز اللقب النادر ليكون مرئيًا في القائمة بمجرد الحصول عليه
                 { id: "rare_boss_drop", name: "دروب الزعماء النادر 🎲", desc: "اهزم الزعماء بفرصة 15% للحصول على اللقب النادر", title: "سفاح الزعماء ☠️", color: "#ff0000", perkText: "الميزة: يمنحك هيبة مرعبة + 5% فرصة للحصول على جواهر من الصخور العادية.", check: () => unlockedTitles.includes("سفاح الزعماء ☠️"), getProgress: () => ({ current: unlockedTitles.includes("سفاح الزعماء ☠️") ? 1 : 0, target: 1 }) }
             ];
 
@@ -980,6 +886,7 @@
             let activeBossReward = 0;
             let activeBossId = 0;
 
+            // 2. تعديل ورفع نقاط حياة (HP) الزعماء لعشرة أضعاف تقريباً لزيادة صعوبة القتال
             const bossData = [
                 { id: 1, name: "الوحش الصخري العملاق 🪨", reqLevel: 5, hp: 1500, reward: 500, img: "assets/boss1.png" },
                 { id: 2, name: "صخرة الكريستال المشعة 💎", reqLevel: 15, hp: 8000, reward: 2500, img: "assets/boss2.png" },
@@ -1019,7 +926,6 @@
             const skinsModal = document.getElementById("skinsModal");
             const adminModal = document.getElementById("adminModal");
             const leaderboardModal = document.getElementById("leaderboardModal");
-            const allianceModal = document.getElementById("allianceModal");
             const adminBtnToggle = document.getElementById("adminBtnToggle");
 
             function createFloatingText(x, y, text, color = "white") {
@@ -1033,34 +939,24 @@
                 setTimeout(() => el.remove(), 800);
             }
 
-            window.resetEntireProgress = async function() {
-                let confirmation = confirm("⚠️ هل أنت متأكد تماماً أنك تريد مسح جميع البيانات والإنجازات والبدء من جديد كلياً؟ (سيتم مسح اسمك من الليدربورد)");
+            window.resetEntireProgress = function() {
+                let confirmation = confirm("⚠️ هل أنت متأكد تماماً أنك تريد مسح جميع البيانات والإنجازات والبدء من جديد كلياً؟");
                 if (confirmation) {
-                    let oldName = playerName;
                     localStorage.removeItem("rockMinerSaveV10"); 
-                    playerName = ""; playerPassword = ""; alliancePartner = null; stones = 0; gems = 0; totalStonesMined = 0; damage = 1; workers = 0;
+                    playerName = ""; stones = 0; gems = 0; totalStonesMined = 0; damage = 1; workers = 0;
                     workersEnabled = true; level = 1; currentExp = 0; maxHealth = 10; health = maxHealth;
                     powerCost = 50; workerCost = 100; activeTitle = "بلا لقب ⚒️"; unlockedTitles = ["بلا لقب ⚒️"];
                     activeSkin = "الأساسي"; purchasedSkins = ["الأساسي"]; totalCrits = 0; totalLegendsFound = 0;
                     boss1Defeated = false; boss2Defeated = false; boss3Defeated = false; boss4Defeated = false;
                     goblinDefeated = false; activeEnergyDrinkTime = 0; hasLuckScroll = false;
 
-                    // مسح اللاعب تماماً من الداتا بيز عشان ما يبانش 0 في الليدربورد
-                    if (oldName) {
-                        try {
-                            await supabaseClient.from('players').delete().eq('username', oldName);
-                        } catch(e) { console.error("Error deleting from DB", e); }
-                    }
-
                     closeAllModals();
                     miner.src = "assets/miner.png";
                     document.getElementById("playerNameInput").value = "";
-                    document.getElementById("playerPasswordInput").value = "";
                     document.getElementById("nameModal").style.display = "flex";
-                    document.getElementById("nameErrorMsg").style.display = "none";
                     
                     update();
-                    alert("تم تصفير منجمك بالكامل بنجاح وتحديث الليدربورد لايف! ⛏️");
+                    alert("تم تصفير منجمك بالكامل بنجاح! ⛏️");
                 }
             }
 
@@ -1079,99 +975,18 @@
                 update();
             }
 
-            // نظام التسجيل المطور
-            window.switchAuthMode = function(mode) {
-                authMode = mode;
-                document.getElementById("tabLogin").classList.remove("active");
-                document.getElementById("tabRegister").classList.remove("active");
-                document.getElementById("nameErrorMsg").style.display = "none";
-                
-                if(mode === 'login') {
-                    document.getElementById("tabLogin").classList.add("active");
-                    document.getElementById("saveNameBtn").innerText = "تسجيل الدخول 🚀";
-                } else {
-                    document.getElementById("tabRegister").classList.add("active");
-                    document.getElementById("saveNameBtn").innerText = "إنشاء حساب 📝";
-                }
-            };
-
-            document.getElementById("saveNameBtn").onclick = async function() {
-                let inputName = document.getElementById("playerNameInput").value.trim();
-                let inputPass = document.getElementById("playerPasswordInput").value.trim();
-                let errorBox = document.getElementById("nameErrorMsg");
-                
-                if(inputName === "" || inputPass === "") {
-                    errorBox.innerText = "❌ الرجاء إدخال الاسم وكلمة المرور!";
-                    errorBox.style.display = "block";
+            document.getElementById("saveNameBtn").onclick = function() {
+                let inputVal = document.getElementById("playerNameInput").value.trim();
+                if(inputVal === "") {
+                    alert("الرجاء إدخل اسم صحيح لتبدأ اللعبة!");
                     return;
                 }
-                
-                document.getElementById("saveNameBtn").disabled = true;
-                document.getElementById("saveNameBtn").innerText = "جاري التحقق... 🔄";
-                errorBox.style.display = "none";
-
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('players')
-                        .select('username, password')
-                        .eq('username', inputName);
-
-                    let userExists = (data && data.length > 0);
-
-                    if (authMode === "register") {
-                        if (userExists) {
-                            errorBox.innerText = "❌ هذا الاسم موجود بالفعل، اختر اسماً آخر أو قم بتسجيل الدخول.";
-                            errorBox.style.display = "block";
-                            resetAuthBtn();
-                            return;
-                        }
-                    } else if (authMode === "login") {
-                        if (!userExists) {
-                            errorBox.innerText = "❌ الحساب غير موجود! تأكد من الاسم أو قم بإنشاء حساب جديد.";
-                            errorBox.style.display = "block";
-                            resetAuthBtn();
-                            return;
-                        } else {
-                            // لو فيه باسورد في الداتا بيز، هنقارن بيه. 
-                            // لو مفيش (عشان لسه معملتوش العمود في سوبابيز)، هنعتمد على الحفظ المحلي مؤقتاً
-                            let dbPass = data[0].password;
-                            let localData = JSON.parse(localStorage.getItem("rockMinerSaveV10"));
-                            
-                            if (dbPass) {
-                                if (dbPass !== inputPass) {
-                                    errorBox.innerText = "❌ كلمة المرور غير صحيحة!";
-                                    errorBox.style.display = "block";
-                                    resetAuthBtn();
-                                    return;
-                                }
-                            } else {
-                                // للتحقق المحلي في حالة لم يتم تحديث قاعدة البيانات بعد
-                                if (localData && localData.playerName === inputName && localData.playerPassword !== inputPass) {
-                                    errorBox.innerText = "❌ كلمة المرور غير صحيحة!";
-                                    errorBox.style.display = "block";
-                                    resetAuthBtn();
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                } catch(e) {
-                    console.log("خطأ في الاتصال بالداتا بيز، الاعتماد على التخزين المحلي.");
-                }
-
-                playerName = inputName;
-                playerPassword = inputPass;
+                playerName = inputVal;
                 document.getElementById("nameModal").style.display = "none";
-                resetAuthBtn();
                 applyPlayerNameFeature();
                 setupRealtimeConnection();
                 update();
             };
-
-            function resetAuthBtn() {
-                document.getElementById("saveNameBtn").disabled = false;
-                document.getElementById("saveNameBtn").innerText = authMode === 'login' ? "تسجيل الدخول 🚀" : "إنشاء حساب 📝";
-            }
 
             function applyPlayerNameFeature() {
                 const namePlate = document.getElementById("playerNamePlate");
@@ -1201,67 +1016,10 @@
                         }
                         triggerSpecificEvent(forcedEvent);
                     })
-                    .on('broadcast', { event: 'admin_gift' }, (payload) => {
-                        if (payload.payload.targetPlayer.toLowerCase() === playerName.toLowerCase()) {
-                            let addStones = parseInt(payload.payload.stones) || 0;
-                            let addGems = parseInt(payload.payload.gems) || 0;
-                            stones += addStones;
-                            totalStonesMined += addStones;
-                            gems += addGems;
-                            showReward(`هدية الأدمن: +${addStones} حجر | +${addGems} جوهرة! 🎁`, "gold");
-                            update();
-                        }
-                    })
-                    .on('broadcast', { event: 'alliance_invite' }, (payload) => {
-                        if (payload.payload.receiver.toLowerCase() === playerName.toLowerCase()) {
-                            if (alliancePartner) return; 
-                            let accept = confirm(`🤝 اللاعب [${payload.payload.sender}] يطلب التحالف معك! هل توافق على مشاركته المنجم والزعماء؟`);
-                            if (accept) {
-                                alliancePartner = payload.payload.sender;
-                                liveChannel.send({
-                                    type: 'broadcast',
-                                    event: 'alliance_accept',
-                                    payload: { sender: payload.payload.sender, receiver: playerName }
-                                });
-                                showReward(`تم قبول التحالف مع ${alliancePartner}! 🤝`, "lime");
-                                update();
-                            }
-                        }
-                    })
-                    .on('broadcast', { event: 'alliance_accept' }, (payload) => {
-                        if (payload.payload.sender.toLowerCase() === playerName.toLowerCase()) {
-                            alliancePartner = payload.payload.receiver;
-                            alert(`🎉 مبروك! قبل [${alliancePartner}] طلب تحالفك، أنتما الآن معاً على نفس الصخرة!`);
-                            update();
-                        }
-                    })
-                    .on('broadcast', { event: 'alliance_hit' }, (payload) => {
-                        if (payload.payload.target.toLowerCase() === playerName.toLowerCase() && payload.payload.sender.toLowerCase() === alliancePartner.toLowerCase()) {
-                            const allyMiner = document.getElementById("allyMiner");
-                            allyMiner.classList.add("miner-hit");
-                            setTimeout(() => allyMiner.classList.remove("miner-hit"), 120);
-                            
-                            health -= payload.payload.damage;
-                            createFloatingText(window.innerWidth / 2 - 80, window.innerHeight / 2, "🤝 " + Math.floor(payload.payload.damage), payload.payload.isCrit ? "gold" : "white");
-                            if (health <= 0) { breakRock(); }
-                            update();
-                        }
-                    })
-                    .on('broadcast', { event: 'alliance_boss' }, (payload) => {
-                        if (payload.payload.target.toLowerCase() === playerName.toLowerCase() && payload.payload.sender.toLowerCase() === alliancePartner.toLowerCase()) {
-                            startBoss(payload.payload.bossId, true);
-                        }
-                    })
-                    .on('broadcast', { event: 'alliance_leave' }, (payload) => {
-                        if (payload.payload.target.toLowerCase() === playerName.toLowerCase()) {
-                            alert(`❌ قام [${alliancePartner}] بإنهاء التحالف الحالي.`);
-                            alliancePartner = null;
-                            update();
-                        }
-                    })
                     .subscribe();
             }
 
+            // بث رسالة الإدمن
             document.getElementById("admSendMsgBtn").onclick = async () => {
                 if (playerName !== "البابا عمر") return;
                 const text = document.getElementById("adminMsgInput").value.trim();
@@ -1272,27 +1030,7 @@
                 document.getElementById("adminMsgInput").value = "";
             };
 
-            document.getElementById("admGiftBtn").onclick = async () => {
-                if (playerName !== "البابا عمر") return;
-                const target = document.getElementById("adminTargetPlayer").value.trim();
-                const giftStones = parseInt(document.getElementById("adminGiftStones").value) || 0;
-                const giftGems = parseInt(document.getElementById("adminGiftGems").value) || 0;
-                
-                if (!target) { alert("الرجاء كتابة اسم اللاعب المستهدف بالظبط!"); return; }
-                if (!liveChannel) setupRealtimeConnection();
-                
-                await liveChannel.send({ 
-                    type: 'broadcast', 
-                    event: 'admin_gift', 
-                    payload: { targetPlayer: target, stones: giftStones, gems: giftGems } 
-                });
-                
-                alert(`🎉 تم إرسال الهدية بنجاح للاعب [${target}].`);
-                document.getElementById("adminTargetPlayer").value = "";
-                document.getElementById("adminGiftStones").value = "";
-                document.getElementById("adminGiftGems").value = "";
-            };
-
+            // بث إيفنت الإدمن
             document.getElementById("admSendEventBtn").onclick = async () => {
                 if (playerName !== "البابا عمر") return;
                 const eventName = document.getElementById("adminEventInput").value.trim();
@@ -1305,16 +1043,15 @@
                 closeAllModals();
             };
 
+            // دالة جلب وعرض ليدربورد المتصدرين أونلاين
             async function fetchAndRenderLeaderboard() {
                 document.getElementById("leaderboardLoading").style.display = "block";
                 document.getElementById("leaderboardTable").style.display = "none";
                 
                 try {
-                    // تم التعديل لجلب السكورات الأكبر من 0 فقط، لمنع ظهور المصفّرين
                     const { data, error } = await supabaseClient
                         .from('players')
                         .select('username, score')
-                        .gt('score', 0)
                         .order('score', { ascending: false })
                         .limit(10);
 
@@ -1333,7 +1070,7 @@
 
                             tr.innerHTML = `
                                 <td class="${rankClass}">${idx + 1}</td>
-                                <td style="color:${player.username.toLowerCase() === playerName.toLowerCase() ? '#00ffcc' : 'white'}; font-weight:${player.username.toLowerCase() === playerName.toLowerCase() ? 'bold' : 'normal'}">${player.username} ${player.username.toLowerCase() === playerName.toLowerCase() ? '(أنت)' : ''}</td>
+                                <td style="color:${player.username === playerName ? '#00ffcc' : 'white'}; font-weight:${player.username === playerName ? 'bold' : 'normal'}">${player.username} ${player.username === playerName ? '(أنت)' : ''}</td>
                                 <td>${Number(player.score).toLocaleString()}</td>
                             `;
                             rowsContainer.appendChild(tr);
@@ -1365,9 +1102,6 @@
                     if (modalElement === leaderboardModal) {
                         fetchAndRenderLeaderboard();
                     }
-                    if (modalElement === allianceModal) {
-                        renderAllianceMenu();
-                    }
                     modalElement.style.display = "block";
                 }
             }
@@ -1379,7 +1113,6 @@
                 skinsModal.style.display = "none";
                 adminModal.style.display = "none";
                 leaderboardModal.style.display = "none";
-                allianceModal.style.display = "none";
             }
             window.closeAllModals = closeAllModals;
 
@@ -1388,7 +1121,6 @@
             document.getElementById("titlesBtnToggle").onclick = () => toggleModal(titlesModal);
             document.getElementById("skinsBtnToggle").onclick = () => toggleModal(skinsModal);
             document.getElementById("leaderboardBtnToggle").onclick = () => toggleModal(leaderboardModal);
-            document.getElementById("allianceBtnToggle").onclick = () => toggleModal(allianceModal);
             adminBtnToggle.onclick = () => toggleModal(adminModal);
 
             document.getElementById("admStonesBtn").onclick = () => { if(playerName === "البابا عمر") { stones += 10000; totalStonesMined += 10000; update(); } };
@@ -1437,17 +1169,6 @@
                     document.getElementById("luckScrollBtn").disabled = false;
                 }
 
-                const playerContainer = document.querySelector(".miner-container:not(#allyContainer)");
-                const allyContainer = document.getElementById("allyContainer");
-                if (alliancePartner) {
-                    playerContainer.style.left = "60%";
-                    allyContainer.style.display = "flex";
-                    document.getElementById("allyNamePlate").innerText = alliancePartner;
-                } else {
-                    playerContainer.style.left = "55%";
-                    allyContainer.style.display = "none";
-                }
-
                 checkAchievements(); 
                 renderBossList();
                 renderTitlesList();
@@ -1459,15 +1180,12 @@
             async function syncWithSupabase() {
                 if (!playerName || playerName === "") return;
                 try {
-                    // الكود جاهز للتعامل مع الباسورد، إذا لم تقم بإنشاء العمود لن يحدث شيء خطير للعبة، ولكن يفضل إضافته.
                     await supabaseClient
                         .from('players')
                         .upsert({ 
                             username: playerName, 
-                            password: playerPassword,
                             score: totalStonesMined, 
                             coins: Math.floor(stones),
-                            alliance: alliancePartner, 
                             updated_at: new Date()
                         }, { onConflict: 'username' });
                 } catch(e) { console.log("خطأ مزامنة السحاب:", e); }
@@ -1479,6 +1197,7 @@
                 if (activeTitle === "👑 الإمبراطور") baseDamage += 5;
                 if (activeSkin === "maodyy التوب 🔥") baseDamage += 3;
                 if (activeEvent === 'volcano') baseDamage *= 3;
+                // 4. تفعيل باف زيادة الهجوم بنسبة 20% لسكن الزعيم السري
                 if (activeSkin === "الزعيم السري 👑") baseDamage = Math.floor(baseDamage * 1.20);
                 return baseDamage;
             }
@@ -1517,6 +1236,7 @@
 
                 if (activeTitle === "المحظوظ الأسطوري 💎") { redAmount *= 1.5; goldAmount *= 1.5; }
                 
+                // 4. تفعيل باف 10% جوائز إضافية لسكن الزعيم السري كبديل للدفاع
                 if (activeSkin === "الزعيم السري 👑") {
                     normalAmount = Math.floor(normalAmount * 1.10);
                     redAmount = Math.floor(redAmount * 1.10);
@@ -1551,6 +1271,7 @@
                     stones += finalReward; totalStonesMined += finalReward;
                     showReward(finalReward, "gold");
 
+                    // 1. نظام الدروپ للألقاب: 15% فرصة سقوط لقب سفاح الزعماء وإعلان برودكاست
                     if (Math.random() < 0.15 && !unlockedTitles.includes("سفاح الزعماء ☠️")) {
                         unlockedTitles.push("سفاح الزعماء ☠️");
                         alert("🎉 مبروك! لقد حالفك الحظ وحصلت على اللقب النادر جداً: سفاح الزعماء ☠️");
@@ -1590,11 +1311,14 @@
                         clearInterval(bossTimerInterval); endEvent();
                     }
                     else if (activeEvent === 'volcano') {
-                        let volcanoBonus = (300 + level * 30) * multiplier * 3; 
+                        // 3. إيفنت البركان المطوّر: جوائز مضاعفة 3 مرات، وترسيبن مستمر دون إنهاء الإيفنت
+                        let volcanoBonus = (300 + level * 30) * multiplier * 3; // الجوائز x3
                         stones += volcanoBonus; totalStonesMined += volcanoBonus;
                         showReward("+" + volcanoBonus + " 🌋", "#e74c3c");
+                        // تجديد الدم فوراً للصخرة الجديدة لاستمرار الإيفنت
                         maxHealth = level * 60 + 500;
                         health = maxHealth;
+                        // تم إزالة استدعاء endEvent() ليبقى الإيفنت فعالاً طوال الدقيقة
                     }
                     else if (activeEvent === 'big_gang_boss') {
                         level += 5; 
@@ -1622,6 +1346,7 @@
 
                     if (activeTitle === "قاتل الجوبلن 👺" && Math.random() < 0.05) { gems += 1; }
                     
+                    // ميزة لقب سفاح الزعماء النادر
                     if (activeTitle === "سفاح الزعماء ☠️" && Math.random() < 0.05) {
                         gems += 2;
                         createFloatingText(window.innerWidth/2, window.innerHeight/2, "+2 جوهرة 💎", "#00e5ff");
@@ -1645,18 +1370,10 @@
                 update();
             }
 
-            function startBoss(bossId, isSynced = false) {
+            function startBoss(bossId) {
                 if (activeEvent !== null) { alert("لا يمكنك استدعاء زعيم أثناء وجود حدث خاص نشط!"); return; }
                 const boss = bossData.find(b => b.id === bossId);
                 if (!boss) return;
-
-                if (alliancePartner && !isSynced) {
-                    liveChannel.send({
-                        type: 'broadcast',
-                        event: 'alliance_boss',
-                        payload: { sender: playerName, target: alliancePartner, bossId: bossId }
-                    });
-                }
 
                 closeAllModals(); isBossActive = true; activeBossId = boss.id;
                 targetName.innerText = boss.name; maxHealth = boss.hp; health = maxHealth; activeBossReward = boss.reward;
@@ -1676,15 +1393,8 @@
 
                 clearInterval(bossTimerInterval);
                 bossTimerInterval = setInterval(() => {
-                    timeLeft--; 
-                    if (timeLeft <= 0) { 
-                        timeLeft = 0;
-                        bossTimer.innerText = timeLeft;
-                        clearInterval(bossTimerInterval); 
-                        endBossFight(); 
-                    } else {
-                        bossTimer.innerText = timeLeft;
-                    }
+                    timeLeft--; bossTimer.innerText = timeLeft;
+                    if (timeLeft <= 0) { clearInterval(bossTimerInterval); endBossFight(); }
                 }, 1000);
                 update();
             }
@@ -1711,14 +1421,10 @@
                 }
 
                 if (!isBossActive && activeEvent === null) {
-                    document.getElementById("eventCountdownLabel").innerText = "حدث قادم:";
                     let reduce = (activeSkin === "خرشمه 💥") ? 2 : 1;
                     nextEventCooldown -= reduce;
-                    if (nextEventCooldown <= 0) { nextEventCooldown = 0; triggerRandomEvent(false); }
-                } else {
-                    document.getElementById("eventCountdownLabel").innerText = "جاري الحدث ⚔️";
+                    if (nextEventCooldown <= 0) { triggerRandomEvent(false); }
                 }
-                
                 let minutes = Math.max(0, Math.floor(nextEventCooldown / 60));
                 let seconds = Math.max(0, nextEventCooldown % 60);
                 document.getElementById("eventCountdownText").innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -1794,17 +1500,8 @@
 
                 clearInterval(bossTimerInterval);
                 bossTimerInterval = setInterval(() => {
-                    timeLeft--; 
-                    if (timeLeft <= 0) { 
-                        timeLeft = 0;
-                        bossTimer.innerText = timeLeft;
-                        notifierTimer.innerText = timeLeft + "ث";
-                        clearInterval(bossTimerInterval); 
-                        endEvent(); 
-                    } else {
-                        bossTimer.innerText = timeLeft; 
-                        notifierTimer.innerText = timeLeft + "ث"; 
-                    }
+                    timeLeft--; bossTimer.innerText = timeLeft; navigatorTimer.innerText = timeLeft + "ث";
+                    if (timeLeft <= 0) { clearInterval(bossTimerInterval); endEvent(); }
                 }, 1000);
                 update();
             }
@@ -1854,6 +1551,15 @@
                 } else { alert("جواهرك غير كافية لشراء مشروب الطاقة! 💎"); }
             }
 
+            window.buyEnergyDrinkSkin = function(skinName, cost) {
+                if (gems >= cost) {
+                    gems -= cost;
+                    purchasedSkins.push(skinName);
+                    showReward(`تم فتح سكن ${skinName}! 🎉`, "gold");
+                    update();
+                } else { alert("جواهرك غير كافية لفتح هذا السكن! 💎"); }
+            }
+
             window.buyLuckScroll = function() {
                 if (hasLuckScroll) return;
                 if (gems >= 40) {
@@ -1866,79 +1572,6 @@
 
             document.getElementById("powerBtn").onclick = buyPower;
             document.getElementById("workerBtn").onclick = buyWorker;
-
-            window.renderAllianceMenu = function() {
-                const container = document.getElementById("allianceStatusContent");
-                if (!alliancePartner) {
-                    container.innerHTML = `
-                        <div class="list-card">
-                            <h3>🤝 ابدأ تحالفاً جديداً الآن</h3>
-                            <p>أدخل اسم اللاعب لتكوين قوة مشتركة والتنقيب معاً على صخرة واحدة!</p>
-                            <input type="text" id="allianceTargetInput" class="admin-input-field" placeholder="اكتب اسم اللاعب بالظبط...">
-                            <button class="shop-btn" onclick="sendAllianceInvite()">إرسال دعوة تحالف ✉️</button>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = `
-                        <div class="list-card" style="border: 2px solid #2ecc71;">
-                            <h3 style="color:#2ecc71;">🤝 أنت حالياً في تحالف نشط</h3>
-                            <p>الحليف الحالي: <b>${alliancePartner}</b></p>
-                            <p style="font-size:12px; color:gold;">أنتما تقفان الآن معاً وتتشاركان في دمج الحفر واستدعاء الزعماء!</p>
-                            <button class="admin-action-btn" onclick="leaveAlliance()">❌ مغادرة وإنهاء التحالف</button>
-                        </div>
-                    `;
-                }
-            };
-
-            // تعديل دالة دعوة التحالف لتكون أكثر دقة
-            window.sendAllianceInvite = async function() {
-                const target = document.getElementById("allianceTargetInput").value.trim();
-                if (!target) { alert("اكتب اسم اللاعب أولاً!"); return; }
-                if (target.toLowerCase() === playerName.toLowerCase()) { alert("لا يمكنك التحالف مع نفسك يا بطل!"); return; }
-
-                try {
-                    const { data, error } = await supabaseClient
-                        .from('players')
-                        .select('username, alliance')
-                        .eq('username', target); // استخدام eq بدل ilike لضمان عدم وجود أخطاء في البحث
-
-                    if (error || !data || data.length === 0) {
-                        alert("❌ هذا اللاعب غير موجود أو لم يسبق له تسجيل الدخول باللعبة مطلقاً! تأكد من كتابة اسمه بالظبط.");
-                        return;
-                    }
-
-                    let foundPlayer = data[0];
-
-                    if (foundPlayer.alliance) {
-                        alert(`❌ لا يمكن التحالف! اللاعب [${foundPlayer.username}] مرتبط بتحالف آخر بالفعل حالياً!`);
-                        return;
-                    }
-
-                    if (!liveChannel) setupRealtimeConnection();
-                    await liveChannel.send({
-                        type: 'broadcast',
-                        event: 'alliance_invite',
-                        payload: { sender: playerName, receiver: foundPlayer.username }
-                    });
-                    alert(`✉️ تم إرسال طلب تحالف لايف إلى [${foundPlayer.username}]. بانتظار موافقته...`);
-                } catch(e) {
-                    alert("فشل فحص السيرفر، يرجى المحاولة لاحقاً.");
-                }
-            };
-
-            window.leaveAlliance = async function() {
-                if (!alliancePartner) return;
-                if (confirm(`هل أنت متأكد من فك وإلغاء التحالف مع [${alliancePartner}]؟`)) {
-                    await liveChannel.send({
-                        type: 'broadcast',
-                        event: 'alliance_leave',
-                        payload: { sender: playerName, target: alliancePartner }
-                    });
-                    alliancePartner = null;
-                    closeAllModals();
-                    update();
-                }
-            };
 
             function renderSkinsList() {
                 const container = document.getElementById("skinsList");
@@ -1973,7 +1606,7 @@
                                     ${isEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
                                 </button>
                             ` : `
-                                <button class="shop-btn" style="background:#444" id="${btnId}" disabled>سكن سري خاص بالزعيم الأكبر 🔒</button>
+                                <button class="shop-btn" style="background:#9b59b6" id="${btnId}" disabled>سكن سري خاص بالزعيم الأكبر 🔒</button>
                             `}
                         `;
                     } else {
@@ -1985,7 +1618,7 @@
                                     ${isEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
                                 </button>
                             ` : `
-                                <button class="shop-btn" style="background: linear-gradient(145deg, #9b59b6, #7d3c98)" id="${btnId}">
+                                <button class="shop-btn" style="background:#9b59b6" id="${btnId}">
                                     شراء المظهر 🛒 <br><span style="color:#00ffff;">💎 ${skin.cost} جوهرة</span>
                                 </button>
                             `}
@@ -2096,14 +1729,6 @@
                     } else {
                         sounds.hit.cloneNode(true).play();
                     }
-
-                    if (alliancePartner) {
-                        liveChannel.send({
-                            type: 'broadcast',
-                            event: 'alliance_hit',
-                            payload: { sender: playerName, target: alliancePartner, damage: dmg, isCrit: isCrit }
-                        });
-                    }
                 } else {
                     rock.classList.add("rock-hit"); setTimeout(() => rock.classList.remove("rock-hit"), 80);
                 }
@@ -2157,6 +1782,7 @@
                 
                 let baseSpeed = (activeTitle === "جامع البلورات 💎") ? 800 : 1000;
                 if (activeSkin === "العصابه 🕶️") baseSpeed -= 200;
+                // 4. تفعيل باف سرعة العمال 15% لسكن الزعيم السري
                 if (activeSkin === "الزعيم السري 👑") baseSpeed = Math.floor(baseSpeed * 0.85);
 
                 let finalSpeed = (activeEnergyDrinkTime > 0) ? (baseSpeed / 2) : baseSpeed; 
@@ -2167,7 +1793,7 @@
             function saveGame() {
                 if(isBossActive || activeEvent !== null || playerName === "") return;
                 localStorage.setItem("rockMinerSaveV10", JSON.stringify({
-                    playerName, playerPassword, alliancePartner, stones, gems, totalStonesMined, damage, workers, workersEnabled, level, currentExp, maxHealth, powerCost, workerCost, activeTitle, unlockedTitles, activeSkin, purchasedSkins,
+                    playerName, stones, gems, totalStonesMined, damage, workers, workersEnabled, level, currentExp, maxHealth, powerCost, workerCost, activeTitle, unlockedTitles, activeSkin, purchasedSkins,
                     totalCrits, totalLegendsFound, boss1Defeated, boss2Defeated, boss3Defeated, boss4Defeated, goblinDefeated,
                     activeEnergyDrinkTime, hasLuckScroll
                 }));
@@ -2176,9 +1802,7 @@
             function loadGame() {
                 const data = JSON.parse(localStorage.getItem("rockMinerSaveV10"));
                 if (data) {
-                    playerName = data.playerName || ""; 
-                    playerPassword = data.playerPassword || "";
-                    alliancePartner = data.alliancePartner || null; stones = data.stones || 0; gems = data.gems || 0; totalStonesMined = data.totalStonesMined || 0;
+                    playerName = data.playerName || ""; stones = data.stones || 0; gems = data.gems || 0; totalStonesMined = data.totalStonesMined || 0;
                     damage = data.damage || 1; workers = data.workers || 0; workersEnabled = data.workersEnabled !== undefined ? data.workersEnabled : true;
                     level = data.level || 1; currentExp = data.currentExp || 0; maxHealth = data.maxHealth || 10; health = maxHealth;
                     powerCost = data.powerCost || 50; workerCost = data.workerCost || 100; activeTitle = data.activeTitle || "بلا لقب ⚒️";
