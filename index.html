@@ -111,7 +111,7 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(90deg, #00e5ff, #2196F3);
-            transition: width 0.5s linear, background 0.3s ease;
+            transition: width 1s linear;
         }
 
         .worker-toggle-btn {
@@ -330,147 +330,74 @@
             border-color: #f1c40f;
         }
 
-        /* ===== 🎨 تحسين شكل القوائم بالكامل (Glassmorphism Game Theme Overhaul) ===== */
+        /* ===== النوافذ المنبثقة ===== */
         .popup-modal {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 385px;
-            max-height: 80vh; 
-            background: rgba(28, 14, 6, 0.96);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            color: #f5ebe6;
-            padding: 24px;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.85), inset 0 0 20px rgba(255, 215, 0, 0.05);
+            width: 365px;
+            max-height: 75vh; 
+            background: linear-gradient(145deg, #4b2a13, #2d160a);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,.7);
             z-index: 100;
             display: none;
-            border: 2px solid rgba(139, 84, 41, 0.6);
+            border: 3px solid #7b4a22;
             overflow-y: auto; 
             box-sizing: border-box;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        .popup-modal::-webkit-scrollbar { width: 6px; }
-        .popup-modal::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
-        .popup-modal::-webkit-scrollbar-thumb { background: #8b5429; border-radius: 10px; }
+        .popup-modal::-webkit-scrollbar { width: 8px; }
+        .popup-modal::-webkit-scrollbar-track { background: #2d160a; border-radius: 10px; }
+        .popup-modal::-webkit-scrollbar-thumb { background: #7b4a22; border-radius: 10px; }
 
-        .modal-header h2 {
-            font-size: 20px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #ffffff, #ffd700);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
         .close-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 74, 74, 0.2);
+            background: none;
+            border: none;
             color: #ff4a4a;
-            font-size: 22px;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
+            font-size: 30px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-        .close-btn:hover {
-            background: #ff4a4a;
-            color: white;
-            transform: rotate(90deg);
-            box-shadow: 0 0 12px rgba(255, 74, 74, 0.5);
-        }
-
-        .list-card {
-            position: relative;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 16px;
-            border-radius: 16px;
-            margin-bottom: 14px;
-            border: 1px solid rgba(139, 84, 41, 0.25);
-            text-align: center;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-            transition: all 0.25s ease;
-        }
-        
-        .list-card:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 215, 0, 0.35);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
         }
 
         .popup-modal button:not(.close-btn) {
             width: 100%;
-            margin-top: 10px;
+            margin-top: 12px;
             padding: 12px;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-            transition: all 0.2s ease;
-        }
-        .popup-modal button:not(.close-btn):hover {
-            transform: scale(1.02);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.35);
+            transition: .2s;
         }
 
-        .shop-btn { background: linear-gradient(145deg, #5dc84f, #3d9631) !important; border: 1px solid #6edb5f !important; }
-        .shop-btn:hover { background: linear-gradient(145deg, #4eb041, #338028) !important; }
-        .shop-premium-btn { background: linear-gradient(145deg, #00c4ff, #005f87) !important; border: 1px solid #33d0ff !important; }
-        .shop-premium-btn:hover { background: linear-gradient(145deg, #0099cc, #004563) !important; }
+        .shop-btn { background: #5dc84f; display: block; text-align: center; text-decoration: none;}
+        .shop-btn:hover { background: #4eb041; transform: scale(1.02); }
+        .shop-premium-btn { background: linear-gradient(145deg, #00c4ff, #0076a8) !important; }
+        .shop-premium-btn:hover { background: linear-gradient(145deg, #0099cc, #00597f) !important; }
 
-        .admin-action-btn { 
-            background: linear-gradient(145deg, #e74c3c, #962d22) !important; 
-            border: 1px solid #ff6b5b !important;
-            border-radius: 10px !important;
-            padding: 10px !important;
-            font-size: 14px !important;
-        }
-        .admin-action-btn:hover { background: linear-gradient(145deg, #c0392b, #7d2218) !important; }
+        .admin-action-btn { background: linear-gradient(90deg, #e74c3c, #c0392b) !important; margin-bottom: 5px; }
 
-        .title-equip-btn { background: linear-gradient(145deg, #2196F3, #116cb3); border: 1px solid #4ba3e3; }
-        .title-equip-btn.equipped { background: linear-gradient(145deg, #9c27b0, #6a1b7a) !important; border: 1px solid #ba4dd4 !important; box-shadow: 0 0 10px rgba(156, 39, 176, 0.5) !important; }
-
-        .action-btn { background: linear-gradient(145deg, #e67e22, #b35d12); border: 1px solid #f39c12; }
-
-        .admin-input-field {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 11px;
-            margin-bottom: 10px;
+        .list-card {
+            position: relative;
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
             border-radius: 10px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
+            margin-bottom: 12px;
+            border: 1px solid #5a3418;
             text-align: center;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        .admin-input-field:focus {
-            border-color: gold;
-            box-shadow: 0 0 8px rgba(255,215,0,0.4);
-            outline: none;
-        }
-        
-        .leaderboard-table th {
-            background-color: rgba(0,0,0,0.4) !important;
-            color: gold;
-            border-bottom: 2px solid #8b5429;
-            font-weight: bold;
-        }
-        .leaderboard-table td {
-            border-bottom: 1px solid rgba(139, 84, 41, 0.15);
+            transition: 0.2s;
         }
         
         .title-perk-tooltip {
@@ -514,7 +441,45 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .list-card p { margin: 5px 0; font-size: 14px; color: #ddd; }
         
-        .action-btn:disabled { background: #555 !important; cursor: not-allowed; opacity: 0.6; border-color: #666 !important; }
+        .action-btn { background: #ff3333; }
+        .action-btn:disabled { background: #555 !important; cursor: not-allowed; opacity: 0.6; }
+
+        .title-equip-btn { background: #2196F3; }
+        .title-equip-btn.equipped { background: #9c27b0 !important; }
+
+        .admin-input-field {
+            width: 90%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid gold;
+            background: #111;
+            color: white;
+            text-align: center;
+        }
+
+        /* ===== ستايل جدول لوحة المتصدرين ===== */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .leaderboard-table th, .leaderboard-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #5a3418;
+        }
+        .leaderboard-table th {
+            background-color: #2d160a;
+            color: gold;
+        }
+        .leaderboard-table tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        .rank-1 { color: gold; font-weight: bold; }
+        .rank-2 { color: #ddd; font-weight: bold; }
+        .rank-3 { color: #cd7f32; font-weight: bold; }
 
         /* ===== الجوائز والأنيميشن ===== */
         #rewardText {
@@ -620,7 +585,7 @@
             .worker-toggle-btn { padding: 3px; font-size: 10px; }
             .menu-buttons { right: 10px; top: 10px; display: flex; flex-direction: column; gap: 5px; }
             .menu-btn { padding: 6px 10px; font-size: 12px; border-radius: 8px; text-align: center; width: 90px; }
-            .health { top: auto; bottom: 255px; left: 50%; width: 90%; }
+            .health { top: auto; bottom: 240px; left: 50%; width: 90%; }
             .bar-bg { width: 100%; height: 20px; }
             .health h2 { font-size: 16px; margin: 2px 0; }
             .health h3 { font-size: 14px; margin: 2px 0; }
@@ -629,7 +594,7 @@
             .player-name-plate { font-size: 11px; padding: 2px 6px; }
             #rock { width: 200px; max-height: 200px; bottom: 10px; }
             #mineBtn { padding: 12px 30px; font-size: 18px; bottom: 15px; width: 80%; text-align: center; }
-            .popup-modal { width: 92%; max-height: 80vh; padding: 18px; }
+            .popup-modal { width: 90%; max-height: 85vh; padding: 15px; }
             #rewardText { font-size: 35px; bottom: 180px; }
             #legendReward { font-size: 45px; }
             .bottom-right-notifier { right: auto; left: 10px; bottom: 80px; padding: 6px 10px; font-size: 12px; }
@@ -663,7 +628,7 @@
                 <div id="expBar"></div>
             </div>
             <div class="event-timer-container">
-                <span id="eventCountdownText">حدث قادم: 10:00</span>
+                حدث قادم: <span id="eventCountdownText">10:00</span>
                 <div class="event-mini-bar"><div id="eventMiniBarFill"></div></div>
             </div>
         </div>
@@ -685,10 +650,6 @@
             <div id="healthBar"></div>
         </div>
         <h3 id="healthText">10 / 10</h3>
-        
-        <!-- التعديل المميز: عداد الكومبو التفاعلي الخارق -->
-        <div id="comboDisplay" style="font-size: 20px; font-weight: bold; color: #ff9800; text-shadow: 0 2px 4px black; margin-top: 5px; display: none; animation: pulseGlow 0.5s infinite alternate;">🔥 كومبو ضربات: <span id="comboValue">0</span> 🔥</div>
-        
         <div id="bossTimer">30</div>
         <div id="eventBanner">حدث خاص نشط! 🔥</div>
     </div>
@@ -798,24 +759,13 @@
         </div>
         <p style="text-align:center; color:#ffcc00;">أهلاً بك يا بابا عمر، تحكّم باللعبة بالكامل:</p>
         
-        <!-- نظام إرسال الموارد المباشر للاعبين -->
-        <div class="list-card" style="border: 1px solid #00e5ff; background: rgba(0, 229, 255, 0.02);">
-            <h4 style="margin: 0px 0px 10px 0px; color: #00e5ff;">🎁 نظام إرسال الهدايا والموارد للاعب محدد</h4>
-            <input type="text" id="adminGiftPlayerInput" class="admin-input-field" placeholder="اسم اللاعب المستهدف بالضبط...">
-            <div style="display: flex; gap: 8px;">
-                <input type="number" id="adminGiftStonesInput" class="admin-input-field" placeholder="عدد الحجارة 🪨">
-                <input type="number" id="adminGiftGemsInput" class="admin-input-field" placeholder="عدد الجواهر 💎">
-            </div>
-            <button class="admin-action-btn" style="background: linear-gradient(90deg, #00c4ff, #0076a8) !important; width: 100%; margin-top: 5px;" id="adminGiftBtn">🎁 إرسال الموارد للمستهدف لايف</button>
-        </div>
-
         <div class="list-card" style="border: 1px solid gold;">
             <input type="text" id="adminMsgInput" class="admin-input-field" placeholder="اكتب رسالة للاعبين هنا...">
             <button class="admin-action-btn" style="background: #27ae60 !important;" id="admSendMsgBtn">📢 بث الرسالة لايف</button>
         </div>
 
         <div class="list-card" style="border: 1px solid #9b59b6;">
-            <input type="text" id="adminEventInput" class="admin-input-field" placeholder="اسم الإيفنت (اكتب: big_gang_boss أو volcano)">
+            <input type="text" id="adminEventInput" class="admin-input-field" placeholder="اسم الإيفنت (مثال: volcano)">
             <button class="admin-action-btn" style="background: #8e44ad !important;" id="admSendEventBtn">🔥 إطلاق إيفنت فوري لكل السيرفر</button>
         </div>
         <hr style="border: 0; height: 1px; background: #5a3418; margin: 10px 0;">
@@ -849,7 +799,7 @@
         (function() {
             // كود الاتصال بـ Supabase
             const SUPABASE_URL = 'https://pwmpugkyuwzfaegcqubf.supabase.co'; 
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bXB1Z2t5dXd6ZmFlZ2kxdWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDU5MDksImV4cCI6MjA5NzkyMTkwOX0.l2BfJPUFynRfoEy4jWVB9Mc2CgwdLDKvQTO77fDh6L4'; 
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bXB1Z2t5dXd6ZmFlZ2NxdWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDU5MDksImV4cCI6MjA5NzkyMTkwOX0.l2BfJPUFynRfoEy4jWVB9Mc2CgwdLDKvQTO77fDh6L4'; // ضع الـ Anon key الخاص بك هنا
 
             const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             let liveChannel = null;
@@ -884,11 +834,6 @@
             
             let activeEnergyDrinkTime = 0; 
             let hasLuckScroll = false; 
-            let localDamageToBigGang = 0; 
-            
-            // متغيرات نظام الكومبو المميز
-            let comboCount = 0;
-            let comboTimeout = null;
 
             function getRequiredExp() { return level * 15 + 10; }
 
@@ -904,6 +849,7 @@
             let activeSkin = "الأساسي";
             let purchasedSkins = ["الأساسي"];
 
+            // 4. تعديل بافات سكن الزعيم السري ليعطي +20% هجوم، وسرعة عمال 15% ومكافأة أحجار
             const skinsData = [
                 { id: "leader", name: "عم زعامه 😎", cost: 100, file: "assets/leader.png", perk: "الميزة: يمنحك +10% فرصة ضربة حرجة (Crit Chance)." },
                 { id: "gang", name: "الجنج 💵", cost: 100, file: "assets/gang.png", perk: "الميزة: زيادة الأرباح بنسبة x1.2 للأحجار العادية." },
@@ -930,6 +876,7 @@
                 { id: "boss_2_ach", name: "سارق الكريستال المشع 💎", desc: "اهزم صخرة الكريستال المشعة", title: "جامع البلورات 💎", color: "#9b59b6", perkText: "الميزة: ضربات العمال التلقائية تصبح أسرع بمقدار 20%.", check: () => boss2Defeated, getProgress: () => ({ current: boss2Defeated ? 1 : 0, target: 1 }) },
                 { id: "boss_3_ach", name: "محطم الآثار القديمة 🤖", desc: "اهزم حارس المناجم القديم", title: "صائد الغولم 🤖", color: "#34495e", perkText: "الميزة: ضربات العمال التلقائية تعطي قوة دبل (Double Damage).", check: () => boss3Defeated, getProgress: () => ({ current: boss3Defeated ? 1 : 0, target: 1 }) },
                 { id: "boss_4_ach", name: "مطفئ النيازك المشتعلة ☄️", desc: "اهزم صخرة النيزك المشتعلة", title: "ملك الفضاء ☄️", color: "#e74c3c", perkText: "الميزة: مضاعفة جميع الأحجار المجمعة من أي صخرة مرتين (x2 Stones)!", check: () => boss4Defeated, getProgress: () => ({ current: boss4Defeated ? 1 : 0, target: 1 }) },
+                // 1. إضافة إنجاز اللقب النادر ليكون مرئيًا في القائمة بمجرد الحصول عليه
                 { id: "rare_boss_drop", name: "دروب الزعماء النادر 🎲", desc: "اهزم الزعماء بفرصة 15% للحصول على اللقب النادر", title: "سفاح الزعماء ☠️", color: "#ff0000", perkText: "الميزة: يمنحك هيبة مرعبة + 5% فرصة للحصول على جواهر من الصخور العادية.", check: () => unlockedTitles.includes("سفاح الزعماء ☠️"), getProgress: () => ({ current: unlockedTitles.includes("سفاح الزعماء ☠️") ? 1 : 0, target: 1 }) }
             ];
 
@@ -939,6 +886,7 @@
             let activeBossReward = 0;
             let activeBossId = 0;
 
+            // 2. تعديل ورفع نقاط حياة (HP) الزعماء لعشرة أضعاف تقريباً لزيادة صعوبة القتال
             const bossData = [
                 { id: 1, name: "الوحش الصخري العملاق 🪨", reqLevel: 5, hp: 1500, reward: 500, img: "assets/boss1.png" },
                 { id: 2, name: "صخرة الكريستال المشعة 💎", reqLevel: 15, hp: 8000, reward: 2500, img: "assets/boss2.png" },
@@ -1000,14 +948,12 @@
                     powerCost = 50; workerCost = 100; activeTitle = "بلا لقب ⚒️"; unlockedTitles = ["بلا لقب ⚒️"];
                     activeSkin = "الأساسي"; purchasedSkins = ["الأساسي"]; totalCrits = 0; totalLegendsFound = 0;
                     boss1Defeated = false; boss2Defeated = false; boss3Defeated = false; boss4Defeated = false;
-                    goblinDefeated = false; activeEnergyDrinkTime = 0; hasLuckScroll = false; localDamageToBigGang = 0;
-                    comboCount = 0;
+                    goblinDefeated = false; activeEnergyDrinkTime = 0; hasLuckScroll = false;
 
                     closeAllModals();
                     miner.src = "assets/miner.png";
                     document.getElementById("playerNameInput").value = "";
                     document.getElementById("nameModal").style.display = "flex";
-                    document.getElementById("comboDisplay").style.display = "none";
                     
                     update();
                     alert("تم تصفير منجمك بالكامل بنجاح! ⛏️");
@@ -1065,35 +1011,15 @@
                     })
                     .on('broadcast', { event: 'game_event' }, (payload) => {
                         const forcedEvent = payload.payload.eventName;
+                        if (forcedEvent === 'big_gang_boss' && playerName !== "البابا عمر") {
+                            return;
+                        }
                         triggerSpecificEvent(forcedEvent);
-                    })
-                    .on('broadcast', { event: 'admin_gift' }, (payload) => {
-                        // استقبال الهدايا من المطور لايف
-                        if (playerName === payload.payload.targetPlayer) {
-                            let giftStones = Number(payload.payload.stones) || 0;
-                            let giftGems = Number(payload.payload.gems) || 0;
-                            stones += giftStones;
-                            totalStonesMined += giftStones;
-                            gems += giftGems;
-                            showReward(`🎁 من الأدمن: +${giftStones} حجر | +${giftGems} جوهرة`, "gold");
-                            alert(`🎁 مبروك! لقد أرسل لك الأدمن هدية خاصة ودعم فوري لمجهودك الأسطوري:\n\n🪨 الأحجار: +${giftStones.toLocaleString()}\n💎 الجواهر: +${giftGems.toLocaleString()}`);
-                            update();
-                        }
-                    })
-                    .on('broadcast', { event: 'big_gang_damage' }, (payload) => {
-                        if (activeEvent === 'big_gang_boss' && payload.payload.attacker !== playerName) {
-                            let remoteDmg = payload.payload.damageDealt;
-                            health -= remoteDmg;
-                            createFloatingText(window.innerWidth / 2 + (Math.random() * 100 - 50), window.innerHeight / 2 - 80 + (Math.random() * 100 - 50), `👤 ${payload.payload.attacker}: ⛏️ ${Math.floor(remoteDmg)}`, "rgba(255, 200, 0, 0.7)");
-                            if (health <= 0) {
-                                breakRock();
-                            }
-                            update();
-                        }
                     })
                     .subscribe();
             }
 
+            // بث رسالة الإدمن
             document.getElementById("admSendMsgBtn").onclick = async () => {
                 if (playerName !== "البابا عمر") return;
                 const text = document.getElementById("adminMsgInput").value.trim();
@@ -1104,6 +1030,7 @@
                 document.getElementById("adminMsgInput").value = "";
             };
 
+            // بث إيفنت الإدمن
             document.getElementById("admSendEventBtn").onclick = async () => {
                 if (playerName !== "البابا عمر") return;
                 const eventName = document.getElementById("adminEventInput").value.trim();
@@ -1116,28 +1043,7 @@
                 closeAllModals();
             };
 
-            // تفعيل وظيفة زر الإرسال الخاص بنظام الهدايا الجديد
-            document.getElementById("adminGiftBtn").onclick = async () => {
-                if (playerName !== "البابا عمر") return;
-                const target = document.getElementById("adminGiftPlayerInput").value.trim();
-                const giftStones = parseInt(document.getElementById("adminGiftStonesInput").value) || 0;
-                const giftGems = parseInt(document.getElementById("adminGiftGemsInput").value) || 0;
-                
-                if (!target) { alert("يرجى إدخال اسم اللاعب المستهدف أولاً!"); return; }
-                
-                if (!liveChannel) setupRealtimeConnection();
-                await liveChannel.send({ 
-                    type: 'broadcast', 
-                    event: 'admin_gift', 
-                    payload: { targetPlayer: target, stones: giftStones, gems: giftGems } 
-                });
-                
-                alert(`تم إرسال الهدية بنجاح إلى اللاعب [${target}]! 🎉\n(الموارد: ${giftStones} حجر و ${giftGems} جوهرة)`);
-                document.getElementById("adminGiftPlayerInput").value = "";
-                document.getElementById("adminGiftStonesInput").value = "";
-                document.getElementById("adminGiftGemsInput").value = "";
-            };
-
+            // دالة جلب وعرض ليدربورد المتصدرين أونلاين
             async function fetchAndRenderLeaderboard() {
                 document.getElementById("leaderboardLoading").style.display = "block";
                 document.getElementById("leaderboardTable").style.display = "none";
@@ -1241,9 +1147,10 @@
                 if (health < 0) health = 0;
                 
                 if (activeEvent === 'big_gang_boss') {
-                    healthText.innerText = `❤️ الدم: ${Math.floor(health).toLocaleString()} / 1,000,000 | دمجك: ${Math.floor(localDamageToBigGang).toLocaleString()} / 100,000`;
+                    let minReq = Math.ceil(maxHealth * 0.10);
+                    healthText.innerText = `❤️ ${Math.floor(health)} / ${Math.floor(maxHealth)} (الحد الأدنى للضربة: ${minReq})`;
                 } else {
-                    healthText.innerText = Math.floor(health).toLocaleString() + " / " + Math.floor(maxHealth).toLocaleString();
+                    healthText.innerText = Math.floor(health) + " / " + Math.floor(maxHealth);
                 }
                 healthBar.style.width = (health / maxHealth) * 100 + "%";
 
@@ -1290,6 +1197,7 @@
                 if (activeTitle === "👑 الإمبراطور") baseDamage += 5;
                 if (activeSkin === "maodyy التوب 🔥") baseDamage += 3;
                 if (activeEvent === 'volcano') baseDamage *= 3;
+                // 4. تفعيل باف زيادة الهجوم بنسبة 20% لسكن الزعيم السري
                 if (activeSkin === "الزعيم السري 👑") baseDamage = Math.floor(baseDamage * 1.20);
                 return baseDamage;
             }
@@ -1328,6 +1236,7 @@
 
                 if (activeTitle === "المحظوظ الأسطوري 💎") { redAmount *= 1.5; goldAmount *= 1.5; }
                 
+                // 4. تفعيل باف 10% جوائز إضافية لسكن الزعيم السري كبديل للدفاع
                 if (activeSkin === "الزعيم السري 👑") {
                     normalAmount = Math.floor(normalAmount * 1.10);
                     redAmount = Math.floor(redAmount * 1.10);
@@ -1362,6 +1271,7 @@
                     stones += finalReward; totalStonesMined += finalReward;
                     showReward(finalReward, "gold");
 
+                    // 1. نظام الدروپ للألقاب: 15% فرصة سقوط لقب سفاح الزعماء وإعلان برودكاست
                     if (Math.random() < 0.15 && !unlockedTitles.includes("سفاح الزعماء ☠️")) {
                         unlockedTitles.push("سفاح الزعماء ☠️");
                         alert("🎉 مبروك! لقد حالفك الحظ وحصلت على اللقب النادر جداً: سفاح الزعماء ☠️");
@@ -1401,30 +1311,28 @@
                         clearInterval(bossTimerInterval); endEvent();
                     }
                     else if (activeEvent === 'volcano') {
-                        let volcanoBonus = (300 + level * 30) * multiplier * 3; 
+                        // 3. إيفنت البركان المطوّر: جوائز مضاعفة 3 مرات، وترسيبن مستمر دون إنهاء الإيفنت
+                        let volcanoBonus = (300 + level * 30) * multiplier * 3; // الجوائز x3
                         stones += volcanoBonus; totalStonesMined += volcanoBonus;
                         showReward("+" + volcanoBonus + " 🌋", "#e74c3c");
+                        // تجديد الدم فوراً للصخرة الجديدة لاستمرار الإيفنت
                         maxHealth = level * 60 + 500;
                         health = maxHealth;
+                        // تم إزالة استدعاء endEvent() ليبقى الإيفنت فعالاً طوال الدقيقة
                     }
                     else if (activeEvent === 'big_gang_boss') {
-                        let requiredContribution = 100000;
-                        if (localDamageToBigGang >= requiredContribution) {
-                            level += 5; 
-                            gems += 50; 
-                            stones += 1000000; 
-                            totalStonesMined += 1000000;
-                            
-                            showReward("مات الجنج الأكبر! 👑 +5 ليفلات، +50 جوهرة، +1,000,000 صخرة", "gold");
-                            
-                            if (Math.random() < 0.20) {
-                                if (!purchasedSkins.includes("الزعيم السري 👑")) {
-                                    purchasedSkins.push("الزعيم السري 👑");
-                                    alert("👑 يا إلهي! لقد حصلت على السكن الخفي النادر [الزعيم السري 👑] بنسبة 20%! تفقد خزانة الملابس الآن.");
-                                }
+                        level += 5; 
+                        gems += 50; 
+                        stones += 1000000; 
+                        totalStonesMined += 1000000;
+                        
+                        showReward("مات الجنج الأكبر! 👑 +5 ليفلات، +50 جوهرة، +1,000,000 صخرة", "gold");
+                        
+                        if (Math.random() < 0.20) {
+                            if (!purchasedSkins.includes("الزعيم السري 👑")) {
+                                purchasedSkins.push("الزعيم السري 👑");
+                                alert("👑 يا إلهي! لقد حصلت على السكن الخفي النادر [الزعيم السري 👑] بنسبة 20%! تفقد خزانة الملابس الآن.");
                             }
-                        } else {
-                            alert(`⚠️ انتهى الإيفنت! لكن لم تحصل على جوائز الزعيم الأكبر لأنك لم تدمجه بنسبة 10% على الأقل!\nدمجك الشخصي الحالي: ${Math.floor(localDamageToBigGang).toLocaleString()} من أصل ${requiredContribution.toLocaleString()} المطلوب.`);
                         }
                         clearInterval(bossTimerInterval); 
                         endEvent();
@@ -1438,6 +1346,7 @@
 
                     if (activeTitle === "قاتل الجوبلن 👺" && Math.random() < 0.05) { gems += 1; }
                     
+                    // ميزة لقب سفاح الزعماء النادر
                     if (activeTitle === "سفاح الزعماء ☠️" && Math.random() < 0.05) {
                         gems += 2;
                         createFloatingText(window.innerWidth/2, window.innerHeight/2, "+2 جوهرة 💎", "#00e5ff");
@@ -1499,7 +1408,6 @@
                 targetName.innerText = "صحة الصخرة"; maxHealth = 10 + Math.floor(totalStonesMined * 0.05); health = maxHealth; update();
             }
 
-            // عداد الثانية الذكي المسؤول عن تحديث الشريط الجانبي والعداد التلقائي
             setInterval(() => {
                 if (activeEnergyDrinkTime > 0) {
                     activeEnergyDrinkTime--;
@@ -1517,19 +1425,10 @@
                     nextEventCooldown -= reduce;
                     if (nextEventCooldown <= 0) { triggerRandomEvent(false); }
                 }
-
-                if (activeEvent !== null) {
-                    let maxEventTime = (activeEvent === 'big_gang_boss') ? 120 : 60;
-                    document.getElementById("eventCountdownText").innerText = `نشط حالياً: ${timeLeft}ث`;
-                    document.getElementById("eventMiniBarFill").style.width = Math.max(0, (timeLeft / maxEventTime) * 100) + "%";
-                    document.getElementById("eventMiniBarFill").style.background = "linear-gradient(90deg, #ff0044, #ff00ea)";
-                } else {
-                    let minutes = Math.max(0, Math.floor(nextEventCooldown / 60));
-                    let seconds = Math.max(0, nextEventCooldown % 60);
-                    document.getElementById("eventCountdownText").innerText = `حدث قادم: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                    document.getElementById("eventMiniBarFill").style.width = (nextEventCooldown / maxCooldownValue) * 100 + "%";
-                    document.getElementById("eventMiniBarFill").style.background = "linear-gradient(90deg, #00e5ff, #2196F3)";
-                }
+                let minutes = Math.max(0, Math.floor(nextEventCooldown / 60));
+                let seconds = Math.max(0, nextEventCooldown % 60);
+                document.getElementById("eventCountdownText").innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                document.getElementById("eventMiniBarFill").style.width = (nextEventCooldown / maxCooldownValue) * 100 + "%";
             }, 1000);
 
             function triggerRandomEvent(force = false) {
@@ -1540,6 +1439,11 @@
             }
 
             function triggerSpecificEvent(picked) {
+                if (picked === 'big_gang_boss' && playerName !== "البابا عمر") {
+                    alert("❌ خطأ أمني: أنت لا تملك صلاحية استدعاء الجنج الأكبر!");
+                    return;
+                }
+
                 if (isBossActive) endBossFight();
                 timeLeft = 60;
                 healthBar.className = "bar-bg"; 
@@ -1579,13 +1483,12 @@
                 }
                 else if (picked === 'big_gang_boss') {
                     activeEvent = 'big_gang_boss';
-                    targetName.innerText = "👑 الجنج الأكبر (الزعيم الأكبر المشترك) 👑";
-                    maxHealth = 1000000; 
-                    localDamageToBigGang = 0; 
+                    targetName.innerText = "👑 الجنج الأكبر (الزعيم الأكبر) 👑";
+                    maxHealth = 250000; 
                     rock.src = "assets/big_gang.png";
                     rock.style.width = window.innerWidth <= 768 ? "230px" : "500px";
                     rock.style.bottom = window.innerWidth <= 768 ? "15px" : "0px";
-                    eventBanner.innerText = "حدث مشترك عالمي: دمه مليون! دمج 10% للتأهل للجوائز الضخمة! 👑";
+                    eventBanner.innerText = "شرط القتال: يجب أن تكون ضربتك دمج 10% على الأقل! 👑";
                     showBottomNotifier("👑", "الجنج الأكبر نشط");
                     healthBar.classList.add("big-boss-health-bar");
                     timeLeft = 120; 
@@ -1597,10 +1500,7 @@
 
                 clearInterval(bossTimerInterval);
                 bossTimerInterval = setInterval(() => {
-                    timeLeft--; bossTimer.innerText = timeLeft; 
-                    if(document.getElementById("notifierTimer")) {
-                        document.getElementById("notifierTimer").innerText = timeLeft + "ث";
-                    }
+                    timeLeft--; bossTimer.innerText = timeLeft; navigatorTimer.innerText = timeLeft + "ث";
                     if (timeLeft <= 0) { clearInterval(bossTimerInterval); endEvent(); }
                 }, 1000);
                 update();
@@ -1649,6 +1549,15 @@
                     showReward("نشاط خارق! العمال أسرع الآن 🧪🔥", "cyan");
                     update();
                 } else { alert("جواهرك غير كافية لشراء مشروب الطاقة! 💎"); }
+            }
+
+            window.buyEnergyDrinkSkin = function(skinName, cost) {
+                if (gems >= cost) {
+                    gems -= cost;
+                    purchasedSkins.push(skinName);
+                    showReward(`تم فتح سكن ${skinName}! 🎉`, "gold");
+                    update();
+                } else { alert("جواهرك غير كافية لفتح هذا السكن! 💎"); }
             }
 
             window.buyLuckScroll = function() {
@@ -1801,37 +1710,10 @@
                     }
                 }
 
-                let dmg = 0;
+                let dmg = getPlayerDamage();
                 let isCrit = false;
 
                 if (isPlayer) {
-                    // معالجة وحساب نظام الكومبو المميز
-                    comboCount++;
-                    clearTimeout(comboTimeout);
-                    comboTimeout = setTimeout(() => {
-                        comboCount = 0;
-                        document.getElementById("comboDisplay").style.display = "none";
-                    }, 2000); // ينتهي الكومبو لو توقف اللاعب لمدة ثانيتين
-
-                    if (comboCount >= 5) {
-                        const comboDisp = document.getElementById("comboDisplay");
-                        document.getElementById("comboValue").innerText = comboCount;
-                        comboDisp.style.display = "block";
-                    }
-
-                    dmg = getPlayerDamage();
-                    
-                    // مكافآت دمج الكومبو الإضافي
-                    if (comboCount >= 10 && comboCount < 25) {
-                        dmg = Math.floor(dmg * 1.2); // دمج أكثر 20%
-                        document.getElementById("comboDisplay").style.color = "#ff5722";
-                    } else if (comboCount >= 25) {
-                        dmg = Math.floor(dmg * 1.5); // دمج خارق أكثر 50%
-                        document.getElementById("comboDisplay").style.color = "#e91e63";
-                        rock.style.filter = "brightness(1.4) drop-shadow(0 0 10px #e91e63)";
-                        setTimeout(() => { rock.style.filter = ""; }, 80);
-                    }
-
                     miner.classList.add("miner-hit"); setTimeout(() => miner.classList.remove("miner-hit"), 120);
                     rock.classList.add("rock-hit"); setTimeout(() => rock.classList.remove("rock-hit"), 120);
 
@@ -1848,27 +1730,24 @@
                         sounds.hit.cloneNode(true).play();
                     }
                 } else {
-                    dmg = workers * (1 + level * 0.05);
-                    if (activeTitle === "صائد الغولم 🤖") dmg *= 2;
                     rock.classList.add("rock-hit"); setTimeout(() => rock.classList.remove("rock-hit"), 80);
                 }
 
                 if (activeEvent === 'lucky' && isPlayer) { dmg = Math.floor(dmg * 1.5); }
 
-                health -= dmg;
                 if (activeEvent === 'big_gang_boss') {
-                    localDamageToBigGang += dmg;
-                    if (liveChannel) {
-                        liveChannel.send({
-                            type: 'broadcast',
-                            event: 'big_gang_damage',
-                            payload: { damageDealt: dmg, attacker: playerName }
-                        });
+                    let requiredMinDamage = maxHealth * 0.10;
+                    if (dmg < requiredMinDamage) {
+                        if (isPlayer) {
+                            createFloatingText(pageX, pageY, "🛡️ محمي! (دمجك أقل من 10%)", "red");
+                        }
+                        return; 
                     }
                 }
 
                 createFloatingText(pageX, pageY, (isCrit ? "💥 " : "⛏️ ") + Math.floor(dmg), isCrit ? "gold" : "white");
 
+                health -= dmg;
                 if (health <= 0) { breakRock(); }
                 update();
             }
@@ -1896,11 +1775,14 @@
 
             function workerLoop() {
                 if (workers > 0 && workersEnabled) {
+                    let workerDamage = workers * (1 + level * 0.05);
+                    if (activeTitle === "صائد الغولم 🤖") workerDamage *= 2;
                     handleHitActions(null, false);
                 }
                 
                 let baseSpeed = (activeTitle === "جامع البلورات 💎") ? 800 : 1000;
                 if (activeSkin === "العصابه 🕶️") baseSpeed -= 200;
+                // 4. تفعيل باف سرعة العمال 15% لسكن الزعيم السري
                 if (activeSkin === "الزعيم السري 👑") baseSpeed = Math.floor(baseSpeed * 0.85);
 
                 let finalSpeed = (activeEnergyDrinkTime > 0) ? (baseSpeed / 2) : baseSpeed; 
