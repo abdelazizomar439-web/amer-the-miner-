@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Amer The Miner - Leaderboard & Secure Live Edition</title>
+    <title>Amer The Miner - Legendary Master Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             margin: 0;
             overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
             background: url("assets/background.png") no-repeat center center fixed;
             background-size: cover;
             user-select: none;
@@ -35,17 +35,18 @@
 
         .box {
             width: 160px;
-            background: linear-gradient(145deg, #5c341a, #361a0c);
+            background: rgba(45, 22, 10, 0.85);
+            backdrop-filter: blur(10px);
             color: white;
             padding: 12px;
-            border-radius: 15px;
+            border-radius: 16px;
             text-align: center;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, .6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
             border: 1px solid #7b4a22;
             transition: .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .box:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,0.8); }
+        .box:hover { transform: scale(1.05); border-color: gold; }
 
         .level-box { position: relative; cursor: pointer; }
         .level-box:hover {
@@ -60,8 +61,14 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
+        .box small {
+            font-size: 12px;
+            color: #ddb088;
+            font-weight: bold;
+        }
+
         #activeTitleDisplay {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
             color: #ffcc00;
             margin-top: 4px;
@@ -71,13 +78,13 @@
         .exp-container {
             width: 100%;
             height: 8px;
-            background: #222;
+            background: #111;
             border-radius: 4px;
             margin-top: 8px;
             overflow: hidden;
             opacity: 0;
             max-height: 0;
-            transition: opacity 0.3s, max-height 0.3s, margin 0.3s;
+            transition: opacity 0.3s, max-height 0.3s;
         }
 
         .level-box:hover .exp-container {
@@ -93,10 +100,10 @@
         }
 
         .event-timer-container {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             padding: 6px;
             border-radius: 10px;
-            border: 1px solid #7b4a22;
+            border: 1px solid #ffcc00;
             color: #ffcc00;
             font-size: 11px;
             text-align: center;
@@ -105,7 +112,7 @@
         .event-mini-bar {
             width: 100%;
             height: 6px;
-            background: #111;
+            background: #222;
             border-radius: 3px;
             margin-top: 4px;
             overflow: hidden;
@@ -121,15 +128,14 @@
             background: linear-gradient(145deg, #27ae60, #1e8449);
             color: white;
             border: 1px solid #2ecc71;
-            padding: 6px;
+            padding: 5px;
             font-size: 12px;
             font-weight: bold;
             border-radius: 8px;
-            margin-top: 8px;
+            margin-top: 5px;
             cursor: pointer;
             width: 100%;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
         .worker-toggle-btn.stopped {
             background: linear-gradient(145deg, #c0392b, #962d22);
@@ -150,29 +156,29 @@
         .bar-bg {
             width: 380px;
             height: 30px;
-            background: #1e1e1e;
+            background: rgba(0,0,0,0.6);
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, .6);
-            border: 2px solid #444;
+            border: 2px solid #5a3418;
+            box-shadow: 0 0 15px rgba(0, 0, 0, .6);
         }
 
         #healthBar {
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, #2ecc71, #2ce67b);
+            background: linear-gradient(90deg, limegreen, #00ff99);
             transition: .2s;
         }
 
-        .boss-health-bar { background: linear-gradient(90deg, #e74c3c, #962d22) !important; }
-        .event-health-bar { background: linear-gradient(90deg, #9b59b6, #e67e22) !important; }
+        .boss-health-bar { background: linear-gradient(90deg, #ff0000, #990000) !important; }
+        .event-health-bar { background: linear-gradient(90deg, #9b59b6, #e74c3c) !important; }
         .big-boss-health-bar { background: linear-gradient(90deg, #ff00ea, #4a00e0) !important; }
 
         #bossTimer {
             font-size: 26px;
             color: #ff3333;
             font-weight: bold;
-            text-shadow: 0 2px 8px black;
+            text-shadow: 0 0 10px black;
             margin-top: 5px;
             display: none;
         }
@@ -186,7 +192,7 @@
             margin-top: 8px;
             font-size: 16px;
             display: none;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
             animation: pulseGlow 1s infinite alternate;
         }
 
@@ -194,21 +200,21 @@
             position: absolute;
             right: 20px;
             bottom: 20px;
-            background: rgba(15, 15, 15, 0.9);
+            background: rgba(0, 0, 0, 0.85);
             border: 2px solid gold;
             border-radius: 12px;
-            padding: 12px 18px;
+            padding: 10px 15px;
             color: white;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             font-weight: bold;
             font-size: 16px;
             z-index: 100;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
             display: none;
         }
-        #notifierTimer { color: #ff3333; font-size: 18px; font-weight: bold; }
+        #notifierTimer { color: #ff3333; font-size: 18px; }
 
         /* ===== العالم واللاعب ===== */
         .world {
@@ -236,23 +242,22 @@
             color: #fff;
             background: rgba(0, 0, 0, 0.75);
             padding: 5px 12px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid #7b4a22;
             margin-bottom: 8px;
             text-shadow: 0 2px 4px black;
             white-space: nowrap;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
 
         .admin-name {
             color: gold !important;
             border-color: gold !important;
             box-shadow: 0 0 15px gold;
-            text-shadow: 0 0 8px gold !important;
             animation: pulseGlow 1.5s infinite alternate;
         }
         @keyframes pulseGlow {
-            from { box-shadow: 0 0 5px gold; } to { box-shadow: 0 0 20px gold; }
+            from { box-shadow: 0 0 5px gold; } to { box-shadow: 0 0 18px gold; }
         }
 
         #miner {
@@ -281,13 +286,13 @@
             filter: brightness(1.3);
         }
 
-        /* ===== الأرقام الطائرة ===== */
+        /* ===== الأرقام الطائرة ข่ารเกะ ===== */
         .floating-damage {
             position: fixed;
             pointer-events: none;
             font-size: 30px;
             font-weight: bold;
-            text-shadow: 2px 2px 5px black;
+            text-shadow: 2px 2px 4px black;
             z-index: 9999;
             animation: flyUpAndFade 0.8s ease-out forwards;
         }
@@ -311,16 +316,17 @@
             padding: 12px 18px;
             font-size: 15px;
             font-weight: bold;
-            background: linear-gradient(145deg, #5c341a, #361a0c);
+            background: rgba(75, 42, 19, 0.85);
+            backdrop-filter: blur(5px);
             color: white;
             border: 2px solid #7b4a22;
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,.4);
+            box-shadow: 0 6px 16px rgba(0,0,0,.4);
             transition: .2s;
         }
 
-        .menu-btn:hover { transform: scale(1.05); box-shadow: 0 6px 18px rgba(0,0,0,0.6); }
+        .menu-btn:hover { transform: translateY(-3px); border-color: gold; box-shadow: 0 8px 20px rgba(0,0,0,.6); }
 
         #adminBtnToggle {
             background: linear-gradient(145deg, #da1b1b, #ffd700);
@@ -330,7 +336,7 @@
         }
 
         #resetBtnToggle {
-            background: linear-gradient(145deg, #d32f2f, #b71c1c);
+            background: linear-gradient(145deg, #d32f2f, #f44336);
             border-color: #ffcdd2;
         }
 
@@ -339,38 +345,47 @@
             border-color: #f1c40f;
         }
 
-        /* ===== النوافذ المنبثقة البوب اب ===== */
+        /* ===== النوافذ المنبثقة السوبر ميرك ===== */
         .popup-modal {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 400px;
+            width: 420px;
             max-height: 80vh; 
-            background: linear-gradient(145deg, #442511, #241107);
+            background: rgba(30, 14, 6, 0.92);
+            backdrop-filter: blur(15px);
             color: white;
-            padding: 22px;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,.8);
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,.85);
             z-index: 100;
             display: none;
             border: 3px solid #7b4a22;
             overflow-y: auto; 
             box-sizing: border-box;
+            animation: modalFadeIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translate(-50%, -45%) scale(0.95); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         .popup-modal::-webkit-scrollbar { width: 8px; }
-        .popup-modal::-webkit-scrollbar-track { background: #241107; border-radius: 10px; }
-        .popup-modal::-webkit-scrollbar-thumb { background: #7b4a22; border-radius: 10px; }
+        .popup-modal::-webkit-scrollbar-track { background: #1e0e06; border-radius: 10px; }
+        .popup-modal::-webkit-scrollbar-thumb { background: #7b4a22; border-radius: 10px; border: 1px solid gold; }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px;
+            margin-bottom: 20px;
             border-bottom: 2px solid #5a3418;
             padding-bottom: 10px;
         }
+
+        .modal-header h2 { font-size: 20px; margin: 0; color: #ffcc00; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
         .close-btn {
             background: none;
@@ -378,49 +393,53 @@
             color: #ff4a4a;
             font-size: 32px;
             cursor: pointer;
-            line-height: 20px;
+            transition: .2s;
         }
+        .close-btn:hover { transform: scale(1.2); color: red; }
 
         .popup-modal button:not(.close-btn) {
             width: 100%;
             margin-top: 12px;
-            padding: 12px;
+            padding: 14px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             color: white;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             transition: .2s;
         }
 
-        .shop-btn { background: #4caf50; display: block; text-align: center; text-decoration: none;}
-        .shop-btn:hover { background: #43a047; transform: scale(1.02); }
-        .shop-btn:disabled { background: #555 !important; cursor: not-allowed; }
+        .shop-btn { background: linear-gradient(145deg, #5dc84f, #3b992e); display: block; text-align: center; text-decoration: none;}
+        .shop-btn:hover { background: linear-gradient(145deg, #4eb041, #2d7821); transform: translateY(-2px); }
+        .shop-btn:disabled { background: #444 !important; color: #888 !important; cursor: not-allowed; transform: none !important; box-shadow: none; }
         .shop-premium-btn { background: linear-gradient(145deg, #00c4ff, #0076a8) !important; }
         .shop-premium-btn:hover { background: linear-gradient(145deg, #0099cc, #00597f) !important; }
 
         .admin-action-btn { background: linear-gradient(90deg, #e74c3c, #c0392b) !important; margin-bottom: 5px; }
+        .admin-action-btn:hover { filter: brightness(1.2); }
 
         .list-card {
             position: relative;
             background: rgba(0,0,0,0.4);
-            padding: 14px;
-            border-radius: 12px;
-            margin-bottom: 14px;
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 15px;
             border: 1px solid #5a3418;
             text-align: center;
-            transition: 0.2s;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
+        .list-card h3 { margin: 0 0 6px 0; font-size: 17px; color: #ffcc00; }
         
         .title-perk-tooltip {
             display: none;
             background: #111;
             color: #00ffcc;
             font-size: 13px;
-            padding: 8px;
-            border-radius: 8px;
-            margin-top: 5px;
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 8px;
             border: 1px dashed #7b4a22;
             text-align: right;
             animation: fadeIn 0.3s forwards;
@@ -447,23 +466,24 @@
             font-size: 11px;
             color: #ffb300;
             text-align: left;
-            margin-top: 3px;
+            margin-top: 4px;
             display: block;
         }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .list-card p { margin: 6px 0; font-size: 14px; color: #ddd; }
+        .list-card p { margin: 5px 0; font-size: 14px; color: #ddd; }
         
-        .action-btn { background: #e74c3c; }
-        .action-btn:disabled { background: #555 !important; cursor: not-allowed; opacity: 0.6; }
+        .action-btn { background: linear-gradient(145deg, #ff3333, #bd2121); }
+        .action-btn:disabled { background: #444 !important; cursor: not-allowed; opacity: 0.5; transform: none !important; }
 
-        .title-equip-btn { background: #2196F3; }
-        .title-equip-btn.equipped { background: #9c27b0 !important; }
+        .title-equip-btn { background: linear-gradient(145deg, #2196F3, #1565C0); }
+        .title-equip-btn.equipped { background: linear-gradient(145deg, #9c27b0, #6a1b9a) !important; box-shadow: 0 0 10px #9c27b0; }
+        .title-equip-btn:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
 
         .admin-input-field {
-            width: 92%;
+            width: 95%;
             padding: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             border-radius: 8px;
             border: 1px solid gold;
             background: #111;
@@ -472,35 +492,32 @@
             font-size: 14px;
         }
 
-        /* ===== ستايل جدول لوحة المتصدرين الفاخر ===== */
+        /* ===== ستايل جدول لوحة المتصدرين الفخم ===== */
         .leaderboard-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 12px;
+            margin-top: 15px;
             font-size: 14px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .leaderboard-table th, .leaderboard-table td {
-            padding: 12px 10px;
+            padding: 12px;
             text-align: center;
-            border-bottom: 1px solid #5a3418;
+            border-bottom: 1px solid #42210b;
         }
         .leaderboard-table th {
             background-color: #2d160a;
             color: gold;
             font-weight: bold;
         }
-        .leaderboard-table tr:nth-child(even) {
-            background-color: rgba(0, 0, 0, 0.3);
-        }
-        .leaderboard-table tr:hover {
-            background-color: rgba(255, 215, 0, 0.05);
-        }
-        .rank-1 { color: #ffd700; font-weight: bold; font-size: 16px; }
-        .rank-2 { color: #c0c0c0; font-weight: bold; font-size: 15px; }
-        .rank-3 { color: #cd7f32; font-weight: bold; font-size: 15px; }
+        .leaderboard-table tr { background-color: rgba(0, 0, 0, 0.3); }
+        .leaderboard-table tr:nth-child(even) { background-color: rgba(0, 0, 0, 0.5); }
+        .leaderboard-table tr:hover { background-color: rgba(123, 74, 34, 0.3); }
+        .rank-1 { color: #ffe700; font-weight: bold; text-shadow: 0 0 8px rgba(255,231,0,0.5); }
+        .rank-2 { color: #dfdfdf; font-weight: bold; }
+        .rank-3 { color: #df9e5f; font-weight: bold; }
 
         /* ===== الجوائز والأنيميشن ===== */
         #rewardText {
@@ -517,7 +534,7 @@
         .rewardAnim { animation: floatUp 1.2s forwards; }
         @keyframes floatUp {
             0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -130px) scale(1.3); }
+            100% { opacity: 0; transform: translate(-50%, -130px) scale(1.35); }
         }
 
         #legendReward {
@@ -528,7 +545,7 @@
             font-size: 70px;
             font-weight: bold;
             color: gold;
-            text-shadow: 0 0 25px gold;
+            text-shadow: 0 0 20px gold, 0 4px 10px black;
             opacity: 0;
             z-index: 100;
             pointer-events: none;
@@ -545,34 +562,36 @@
             left: 50%;
             bottom: 20px;
             transform: translateX(-50%);
-            padding: 18px 45px;
-            font-size: 22px;
+            padding: 18px 50px;
+            font-size: 24px;
             font-weight: bold;
             border: none;
-            border-radius: 15px;
-            background: linear-gradient(145deg, #8e5429, #5a3418);
+            border-radius: 18px;
+            background: linear-gradient(145deg, #7b4a22, #5a3418);
             color: white;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, .5);
-            border: 1px solid #a06335;
-            transition: 0.2s;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .6), inset 0 2px 5px rgba(255,255,255,0.2);
+            border: 1px solid #94592d;
+            transition: .2s;
             touch-action: manipulation;
         }
-        #mineBtn:active { transform: translateX(-50%) scale(0.95); }
+        #mineBtn:hover { transform: translateX(-50%) scale(1.03); background: linear-gradient(145deg, #8c5529, #663c1c); box-shadow: 0 12px 30px rgba(0, 0, 0, .7); }
+        #mineBtn:active { transform: translateX(-50%) scale(0.97); }
 
         .name-modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(8px);
             z-index: 500;
             display: flex;
             justify-content: center;
             align-items: center;
         }
         .name-box {
-            background: linear-gradient(145deg, #522d15, #241107);
+            background: rgba(45, 22, 10, 0.95);
             padding: 35px;
-            border-radius: 25px;
+            border-radius: 24px;
             border: 3px solid #7b4a22;
             text-align: center;
             color: white;
@@ -580,9 +599,9 @@
             box-shadow: 0 15px 40px black;
         }
         .name-input {
-            width: 92%;
+            width: 90%;
             padding: 12px;
-            margin-top: 18px;
+            margin-top: 15px;
             border-radius: 10px;
             border: 2px solid #7b4a22;
             background: #111;
@@ -590,8 +609,9 @@
             font-size: 16px;
             text-align: center;
         }
+        .name-input:focus { border-color: gold; outline: none; }
         .name-submit {
-            background: #4caf50;
+            background: linear-gradient(145deg, #5dc84f, #3b992e);
             color: white;
             padding: 12px 20px;
             border: none;
@@ -601,35 +621,36 @@
             font-size: 18px;
             font-weight: bold;
             width: 100%;
-            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: .2s;
         }
-        .name-submit:hover { background: #43a047; }
+        .name-submit:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-        /* ===== ميديا كويري شاشات الهواتف ===== */
+        /* ===== ميديا كويري للهواتف الذكية ===== */
         @media(max-width:768px) {
             body { overflow: hidden; }
             .hud { left: 10px; top: 10px; gap: 5px; }
-            .box { width: 110px; padding: 6px; border-radius: 8px; }
-            .box span { font-size: 18px; }
-            .box small { font-size: 10px; }
-            #activeTitleDisplay { font-size: 10px; }
-            .event-timer-container { font-size: 9px; padding: 4px; }
-            .worker-toggle-btn { padding: 4px; font-size: 10px; margin-top: 4px; }
+            .box { width: 105px; padding: 6px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
+            .box span { font-size: 17px; }
+            .box small { font-size: 9px; }
+            #activeTitleDisplay { font-size: 9px; }
+            .event-timer-container { font-size: 8px; padding: 3px; }
+            .worker-toggle-btn { padding: 3px; font-size: 9px; margin-top: 3px; }
             .menu-buttons { right: 10px; top: 10px; display: flex; flex-direction: column; gap: 5px; }
-            .menu-btn { padding: 8px 10px; font-size: 12px; border-radius: 8px; text-align: center; width: 95px; }
+            .menu-btn { padding: 8px 10px; font-size: 11px; border-radius: 10px; text-align: center; width: 95px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
             .health { top: auto; bottom: 250px; left: 50%; width: 92%; }
             .bar-bg { width: 100%; height: 22px; }
-            .health h2 { font-size: 15px; margin: 2px 0; }
+            .health h2 { font-size: 15px; margin: 2px 0; text-shadow: 0 2px 4px black; }
             .health h3 { font-size: 13px; margin: 2px 0; }
             .world { height: 320px; bottom: 80px; }
-            .miner-container { width: 95px; left: 10px; bottom: 10px; }
-            .player-name-plate { font-size: 11px; padding: 3px 8px; }
-            #rock { width: 220px; max-height: 220px; bottom: 10px; }
-            #mineBtn { padding: 14px 30px; font-size: 18px; bottom: 15px; width: 85%; text-align: center; }
-            .popup-modal { width: 92%; max-height: 80vh; padding: 15px; }
-            #rewardText { font-size: 38px; bottom: 190px; }
+            .miner-container { width: 90px; left: 10px; bottom: 10px; }
+            .player-name-plate { font-size: 11px; padding: 3px 8px; border-radius: 6px; }
+            #rock { width: 210px; max-height: 210px; bottom: 10px; }
+            #mineBtn { padding: 14px 30px; font-size: 18px; bottom: 15px; width: 85%; text-align: center; border-radius: 14px; }
+            .popup-modal { width: 92%; max-height: 82vh; padding: 18px; border-radius: 20px; }
+            #rewardText { font-size: 38px; bottom: 195px; }
             #legendReward { font-size: 45px; }
-            .bottom-right-notifier { right: auto; left: 10px; bottom: 85px; padding: 8px 12px; font-size: 12px; }
+            .bottom-right-notifier { right: auto; left: 10px; bottom: 85px; padding: 6px 12px; font-size: 12px; }
         }
     </style>
 </head>
@@ -640,6 +661,7 @@
         <div class="name-box">
             <h2>مرحباً بك يا بطل! ⛏️</h2>
             <p>أدخل اسمك لتبدأ رحلة التنقيب الأسطورية:</p>
+            <div id="nameErrorMsg" style="color: #ff4a4a; font-size: 12px; font-weight: bold; margin-bottom: 5px; display: none;"></div>
             <input type="text" class="name-input" id="playerNameInput" placeholder="اكتب اسمك هنا..." maxlength="15">
             <button class="name-submit" id="saveNameBtn">ابدأ اللعب 🚀</button>
         </div>
@@ -660,7 +682,7 @@
                 <div id="expBar"></div>
             </div>
             <div class="event-timer-container">
-                <span id="eventCountdownLabel">حدث قادر:</span> <span id="eventCountdownText">10:00</span>
+                <span id="eventCountdownLabel">حدث قادم:</span> <span id="eventCountdownText">10:00</span>
                 <div class="event-mini-bar"><div id="eventMiniBarFill"></div></div>
             </div>
         </div>
@@ -668,10 +690,10 @@
 
     <div class="menu-buttons">
         <button class="menu-btn" id="adminBtnToggle">🛠️ لوحة الأدمن</button>
-        <button class="menu-btn" id="allianceBtnToggle" style="background: linear-gradient(145deg, #2e4053, #1a252f); border-color: #34495e;">🤝 التحالفات</button>
+        <button class="menu-btn" id="allianceBtnToggle" style="background: linear-gradient(145deg, #2e4053, #1a252f);">🤝 التحالفات</button>
         <button class="menu-btn" id="leaderboardBtnToggle">🏆 المتصدرين</button>
         <button class="menu-btn" id="resetBtnToggle" onclick="resetEntireProgress()">⚠️ تصفير</button>
-        <button class="menu-btn" id="skinsBtnToggle" style="background: linear-gradient(145deg, #9b59b6, #4a235a); border-color: #8e44ad;">👕 السكنات</button>
+        <button class="menu-btn" id="skinsBtnToggle" style="background: linear-gradient(145deg, #9b59b6, #4a235a);">👕 السكنات</button>
         <button class="menu-btn" id="shopBtnToggle">🛒 المتجر</button>
         <button class="menu-btn" id="bossBtnToggle">👹 الزعماء</button>
         <button class="menu-btn" id="titlesBtnToggle">🏆 الألقاب</button>
@@ -714,7 +736,7 @@
 
     <button id="mineBtn">اضغط للتكسير ⛏️</button>
 
-    <!-- مودال التحالفات -->
+    <!-- مودال التحالفات المطور والآمن -->
     <div class="popup-modal" id="allianceModal">
         <div class="modal-header">
             <h2>🤝 نظام التحالفات الأسطورية</h2>
@@ -725,11 +747,11 @@
 
     <div class="popup-modal" id="leaderboardModal">
         <div class="modal-header">
-            <h2>🏆 لوحة صدارة منجم عامر العالمي</h2>
+            <h2>🏆 لوحة الصدارة العالمية</h2>
             <button class="close-btn" onclick="closeAllModals()">&times;</button>
         </div>
-        <p style="text-align:center; font-size:12px; color: #ffcc00;">أعلى 10 لاعبين تنقيباً في السيرفر لايف:</p>
-        <div id="leaderboardLoading" style="text-align:center; margin: 10px 0; color:cyan;">جاري تحميل لوحة الصدارة... 🔄</div>
+        <p style="text-align:center; font-size:13px; color: #ffcc00; margin-top: 0;">أعلى 10 لاعبين تنقيباً في السيرفر لايف:</p>
+        <div id="leaderboardLoading" style="text-align:center; margin: 20px 0; color:cyan; font-weight: bold;">جاري تحميل لوحة الصدارة... 🔄</div>
         <table class="leaderboard-table" id="leaderboardTable" style="display:none;">
             <thead>
                 <tr>
@@ -913,7 +935,7 @@
                 { id: "crit_50", name: "المقاتل السريع ⚡", desc: "سجل 50 ضربة حرجة (CRIT)", title: "المسدد الخارق ⚡", color: "#00ffff", perkText: "الميزة: رفع فرصة ضربات الكريت (CRIT) لـ 20% بدلاً من 12%.", check: () => totalCrits >= 50, getProgress: () => ({ current: totalCrits, target: 50 }) },
                 { id: "find_legend", name: "ضربة حظ أسطورية ✨", desc: "احصل على أول صخرة ذهبية (Legendary)", title: "المحظوظ الأسطوري 💎", color: "gold", perkText: "الميزة: زيادة الجوائز الذهبية والحمراء بنسبة x1.5.", check: () => totalLegendsFound >= 1, getProgress: () => ({ current: totalLegendsFound, target: 1 }) },
                 { id: "goblin_hunter", name: "صائد الجوبلن الماكر 👺", desc: "اقضِ على الجوبلن المختبئ واحصل على كنز الجواهر", title: "قاتل الجوبلن 👺", color: "#2ecc71", perkText: "الميزة: تمنحك ضرباتك فرصة 5% للحصول على 1 جوهرة إضافية من الصخور العادية!", check: () => goblinDefeated, getProgress: () => ({ current: goblinDefeated ? 1 : 0, target: 1 }) },
-                { id: "lvl_25_ach", name: "الوصول للقمة 👑", desc: "تخطي ليفل 25 في المنجم العالمي", title: "الإمبراطور 👑", color: "#f1c40f", perkText: "الميزة: زيادة القوة الكلية بمقدار +5 ضربات إضافية.", check: () => level >= 25, getProgress: () => ({ current: level, target: 25 }) },
+                { id: "lvl_25_ach", name: "الوصول للقمة 👑", desc: "تخطي ليفل 25 في المنجم العالمي", title: "الإمبراطور 👑", color: "#f1c40f", perkText: "الميزة: زيادة القوة الكلية بنسبة +5 ضربات إضافية.", check: () => level >= 25, getProgress: () => ({ current: level, target: 25 }) },
                 { id: "gem_rich_ach", name: "خزينة الجواهر الممتلئة 💎", desc: "اجمع 150 جوهرة كلياً", title: "الملياردير 💎", color: "#9b59b6", perkText: "الميزة: فرصة ظهور صخور الجوائز العادية ترتفع بمقدار الضعف.", check: () => gems >= 150, getProgress: () => ({ current: gems, target: 150 }) },
                 { id: "boss_1_ach", name: "قاهر الصخرة العظيمة 🪨", desc: "اهزم الوحش الصخري العملاق", title: "مدمر الجبابرة 🪨", color: "#e67e22", perkText: "الميزة: زيادة قوة ضرباتك بمقدار +2 قوة إضافية ثابتة.", check: () => boss1Defeated, getProgress: () => ({ current: boss1Defeated ? 1 : 0, target: 1 }) },
                 { id: "boss_2_ach", name: "سارق الكريستال المشع 💎", desc: "اهزم صخرة الكريستال المشعة", title: "جامع البلورات 💎", color: "#9b59b6", perkText: "الميزة: ضربات العمال التلقائية تصبح أسرع بمقدار 20%.", check: () => boss2Defeated, getProgress: () => ({ current: boss2Defeated ? 1 : 0, target: 1 }) },
@@ -984,12 +1006,7 @@
             window.resetEntireProgress = async function() {
                 let confirmation = confirm("⚠️ هل أنت متأكد تماماً أنك تريد مسح جميع البيانات والإنجازات والبدء من جديد كلياً؟");
                 if (confirmation) {
-                    if (playerName && playerName !== "") {
-                        try {
-                            await supabaseClient.from('players').delete().eq('username', playerName);
-                        } catch(e) { console.log(e); }
-                    }
-
+                    let oldName = playerName;
                     localStorage.removeItem("rockMinerSaveV10"); 
                     playerName = ""; alliancePartner = null; stones = 0; gems = 0; totalStonesMined = 0; damage = 1; workers = 0;
                     workersEnabled = true; level = 1; currentExp = 0; maxHealth = 10; health = maxHealth;
@@ -998,13 +1015,20 @@
                     boss1Defeated = false; boss2Defeated = false; boss3Defeated = false; boss4Defeated = false;
                     goblinDefeated = false; activeEnergyDrinkTime = 0; hasLuckScroll = false;
 
+                    if (oldName) {
+                        try {
+                            await supabaseClient.from('players').upsert({ username: oldName, score: 0, coins: 0, alliance: null, updated_at: new Date() });
+                        } catch(e) {}
+                    }
+
                     closeAllModals();
                     miner.src = "assets/miner.png";
                     document.getElementById("playerNameInput").value = "";
                     document.getElementById("nameModal").style.display = "flex";
+                    document.getElementById("nameErrorMsg").style.display = "none";
                     
                     update();
-                    alert("تم تصفير منجمك بالكامل بنجاح من السيرفر والمستودع المحلي! ⛏️");
+                    alert("تم تصفير منجمك بالكامل بنجاح وتحديث الليدربورد لايف! ⛏️");
                 }
             }
 
@@ -1025,10 +1049,14 @@
 
             document.getElementById("saveNameBtn").onclick = async function() {
                 let inputVal = document.getElementById("playerNameInput").value.trim();
+                let errorBox = document.getElementById("nameErrorMsg");
                 if(inputVal === "") {
-                    alert("الرجاء إدخل اسم صحيح لتبدأ اللعبة!");
+                    alert("الرجاء إدخال اسم صحيح لتبدأ اللعبة!");
                     return;
                 }
+                
+                document.getElementById("saveNameBtn").disabled = true;
+                document.getElementById("saveNameBtn").innerText = "جاري التحقق من الاسم... 🔄";
 
                 try {
                     const { data, error } = await supabaseClient
@@ -1036,14 +1064,21 @@
                         .select('username')
                         .eq('username', inputVal);
 
-                    if (data && data.length > 0) {
-                        alert("❌ هذا الاسم محجوز بالفعل للاعب آخر أونلاين! اختر اسماً فريداً.");
+                    if (!error && data && data.length > 0) {
+                        errorBox.innerText = "❌ هذا الاسم محجوز للاعب آخر، اختر اسماً فريداً!";
+                        errorBox.style.display = "block";
+                        document.getElementById("saveNameBtn").disabled = false;
+                        document.getElementById("saveNameBtn").innerText = "ابدأ اللعب 🚀";
                         return;
                     }
-                } catch(e) { console.log(e); }
+                } catch(e) {
+                    console.log("خطأ في الاتصال بفحص الأسماء، سيتم تخطي الفحص محلياً.");
+                }
 
                 playerName = inputVal;
                 document.getElementById("nameModal").style.display = "none";
+                document.getElementById("saveNameBtn").disabled = false;
+                document.getElementById("saveNameBtn").innerText = "ابدأ اللعب 🚀";
                 applyPlayerNameFeature();
                 setupRealtimeConnection();
                 update();
@@ -1078,7 +1113,7 @@
                         triggerSpecificEvent(forcedEvent);
                     })
                     .on('broadcast', { event: 'admin_gift' }, (payload) => {
-                        if (payload.payload.targetPlayer === playerName) {
+                        if (payload.payload.targetPlayer.toLowerCase() === playerName.toLowerCase()) {
                             let addStones = parseInt(payload.payload.stones) || 0;
                             let addGems = parseInt(payload.payload.gems) || 0;
                             stones += addStones;
@@ -1089,7 +1124,7 @@
                         }
                     })
                     .on('broadcast', { event: 'alliance_invite' }, (payload) => {
-                        if (payload.payload.receiver === playerName) {
+                        if (payload.payload.receiver.toLowerCase() === playerName.toLowerCase()) {
                             if (alliancePartner) return; 
                             let accept = confirm(`🤝 اللاعب [${payload.payload.sender}] يطلب التحالف معك! هل توافق على مشاركته المنجم والزعماء؟`);
                             if (accept) {
@@ -1105,14 +1140,14 @@
                         }
                     })
                     .on('broadcast', { event: 'alliance_accept' }, (payload) => {
-                        if (payload.payload.sender === playerName) {
+                        if (payload.payload.sender.toLowerCase() === playerName.toLowerCase()) {
                             alliancePartner = payload.payload.receiver;
                             alert(`🎉 مبروك! قبل [${alliancePartner}] طلب تحالفك، أنتما الآن معاً على نفس الصخرة!`);
                             update();
                         }
                     })
                     .on('broadcast', { event: 'alliance_hit' }, (payload) => {
-                        if (payload.payload.target === playerName && payload.payload.sender === alliancePartner) {
+                        if (payload.payload.target.toLowerCase() === playerName.toLowerCase() && payload.payload.sender.toLowerCase() === alliancePartner.toLowerCase()) {
                             const allyMiner = document.getElementById("allyMiner");
                             allyMiner.classList.add("miner-hit");
                             setTimeout(() => allyMiner.classList.remove("miner-hit"), 120);
@@ -1124,12 +1159,12 @@
                         }
                     })
                     .on('broadcast', { event: 'alliance_boss' }, (payload) => {
-                        if (payload.payload.target === playerName && payload.payload.sender === alliancePartner) {
+                        if (payload.payload.target.toLowerCase() === playerName.toLowerCase() && payload.payload.sender.toLowerCase() === alliancePartner.toLowerCase()) {
                             startBoss(payload.payload.bossId, true);
                         }
                     })
                     .on('broadcast', { event: 'alliance_leave' }, (payload) => {
-                        if (payload.payload.target === playerName) {
+                        if (payload.payload.target.toLowerCase() === playerName.toLowerCase()) {
                             alert(`❌ قام [${alliancePartner}] بإنهاء التحالف الحالي.`);
                             alliancePartner = null;
                             update();
@@ -1207,7 +1242,7 @@
 
                             tr.innerHTML = `
                                 <td class="${rankClass}">${idx + 1}</td>
-                                <td style="color:${player.username === playerName ? '#00ffcc' : 'white'}; font-weight:${player.username === playerName ? 'bold' : 'normal'}">${player.username} ${player.username === playerName ? '(أنت)' : ''}</td>
+                                <td style="color:${player.username.toLowerCase() === playerName.toLowerCase() ? '#00ffcc' : 'white'}; font-weight:${player.username.toLowerCase() === playerName.toLowerCase() ? 'bold' : 'normal'}">${player.username} ${player.username.toLowerCase() === playerName.toLowerCase() ? '(أنت)' : ''}</td>
                                 <td>${Number(player.score).toLocaleString()}</td>
                             `;
                             rowsContainer.appendChild(tr);
@@ -1765,22 +1800,23 @@
             window.sendAllianceInvite = async function() {
                 const target = document.getElementById("allianceTargetInput").value.trim();
                 if (!target) { alert("اكتب اسم اللاعب أولاً!"); return; }
-                if (target === playerName) { alert("لا يمكنك التحالف مع نفسك يا بطل!"); return; }
+                if (target.toLowerCase() === playerName.toLowerCase()) { alert("لا يمكنك التحالف مع نفسك يا بطل!"); return; }
 
                 try {
                     const { data, error } = await supabaseClient
                         .from('players')
                         .select('username, alliance')
-                        .eq('username', target)
-                        .maybeSingle();
+                        .ilike('username', target);
 
-                    if (error || !data) {
-                        alert("❌ هذا اللاعب غير موجود أو لم يقم بتسجيل الدخول مسبقاً!");
+                    if (error || !data || data.length === 0) {
+                        alert("❌ هذا اللاعب غير موجود أو لم يسبق له تسجيل الدخول باللعبة مطلقاً!");
                         return;
                     }
 
-                    if (data.alliance) {
-                        alert(`❌ لا يمكن التحالف! اللاعب [${target}] موجود في تحالف آخر بالفعل!`);
+                    let foundPlayer = data[0];
+
+                    if (foundPlayer.alliance) {
+                        alert(`❌ لا يمكن التحالف! اللاعب [${foundPlayer.username}] مرتبط بتحالف آخر بالفعل حالياً!`);
                         return;
                     }
 
@@ -1788,9 +1824,9 @@
                     await liveChannel.send({
                         type: 'broadcast',
                         event: 'alliance_invite',
-                        payload: { sender: playerName, receiver: target }
+                        payload: { sender: playerName, receiver: foundPlayer.username }
                     });
-                    alert(`✉️ تم إرسال طلب تحالف لايف إلى [${target}]. بانتظار موافقته...`);
+                    alert(`✉️ تم إرسال طلب تحالف لايف إلى [${foundPlayer.username}]. بانتظار موافقته...`);
                 } catch(e) {
                     alert("فشل فحص السيرفر، يرجى المحاولة لاحقاً.");
                 }
@@ -1843,7 +1879,7 @@
                                     ${isEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
                                 </button>
                             ` : `
-                                <button class="shop-btn" style="background:#9b59b6" id="${btnId}" disabled>سكن سري خاص بالزعيم الأكبر 🔒</button>
+                                <button class="shop-btn" style="background:#444" id="${btnId}" disabled>سكن سري خاص بالزعيم الأكبر 🔒</button>
                             `}
                         `;
                     } else {
@@ -1855,7 +1891,7 @@
                                     ${isEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
                                 </button>
                             ` : `
-                                <button class="shop-btn" style="background:#9b59b6" id="${btnId}">
+                                <button class="shop-btn" style="background: linear-gradient(145deg, #9b59b6, #7d3c98)" id="${btnId}">
                                     شراء المظهر 🛒 <br><span style="color:#00ffff;">💎 ${skin.cost} جوهرة</span>
                                 </button>
                             `}
