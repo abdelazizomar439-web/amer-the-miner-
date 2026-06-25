@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Amer The Miner - Leaderboard & Secure Live Edition</title>
-    <!-- استدعاء مكتبة Supabase الرسمية لتشغيل الـ Realtime والاتصال -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
@@ -222,6 +221,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            transition: left 0.5s ease;
         }
 
         .player-name-plate {
@@ -385,6 +385,7 @@
 
         .shop-btn { background: #5dc84f; display: block; text-align: center; text-decoration: none;}
         .shop-btn:hover { background: #4eb041; transform: scale(1.02); }
+        .shop-btn:disabled { background: #555 !important; cursor: not-allowed; }
         .shop-premium-btn { background: linear-gradient(145deg, #00c4ff, #0076a8) !important; }
         .shop-premium-btn:hover { background: linear-gradient(145deg, #0099cc, #00597f) !important; }
 
@@ -629,7 +630,7 @@
                 <div id="expBar"></div>
             </div>
             <div class="event-timer-container">
-                حدث قادم: <span id="eventCountdownText">10:00</span>
+                <span id="eventCountdownLabel">حدث قادم:</span> <span id="eventCountdownText">10:00</span>
                 <div class="event-mini-bar"><div id="eventMiniBarFill"></div></div>
             </div>
         </div>
@@ -637,6 +638,7 @@
 
     <div class="menu-buttons">
         <button class="menu-btn" id="adminBtnToggle">🛠️ لوحة الأدمن</button>
+        <button class="menu-btn" id="allianceBtnToggle" style="background: linear-gradient(145deg, #2e4053, #1a252f);">🤝 التحالفات</button>
         <button class="menu-btn" id="leaderboardBtnToggle">🏆 المتصدرين</button>
         <button class="menu-btn" id="resetBtnToggle" onclick="resetEntireProgress()">⚠️ تصفير</button>
         <button class="menu-btn" id="skinsBtnToggle" style="background: linear-gradient(145deg, #9b59b6, #4a235a);">👕 السكنات</button>
@@ -668,6 +670,12 @@
             <div class="player-name-plate" id="playerNamePlate">لاعب جديد</div>
             <img src="assets/miner.png" id="miner" alt="Miner">
         </div>
+
+        <!-- سكن الحليف المشترك في التحالفات -->
+        <div class="miner-container" id="allyContainer" style="display: none; left: 25%; transform: scaleX(-1);">
+            <div class="player-name-plate" id="allyNamePlate" style="transform: scaleX(-1);">حليف</div>
+            <img src="assets/miner.png" id="allyMiner" alt="Ally Miner">
+        </div>
         
         <img src="assets/rock.png" id="rock" alt="Rock">
         <div id="rewardText"></div>
@@ -676,7 +684,15 @@
 
     <button id="mineBtn">اضغط للتكسير ⛏️</button>
 
-    <!-- نافذة لوحة الصدارة المنبثقة -->
+    <!-- مودال التحالفات الجديد -->
+    <div class="popup-modal" id="allianceModal">
+        <div class="modal-header">
+            <h2>🤝 نظام التحالفات الأسطورية</h2>
+            <button class="close-btn" onclick="closeAllModals()">&times;</button>
+        </div>
+        <div id="allianceStatusContent"></div>
+    </div>
+
     <div class="popup-modal" id="leaderboardModal">
         <div class="modal-header">
             <h2>🏆 لوحة صدارة منجم عامر العالمي</h2>
@@ -693,8 +709,7 @@
                 </tr>
             </thead>
             <tbody id="leaderboardRows">
-                <!-- الصفوف هيتم توليدها برمجياً -->
-            </tbody>
+                </tbody>
         </table>
     </div>
 
@@ -762,6 +777,15 @@
         </div>
         <p style="text-align:center; color:#ffcc00;">أهلاً بك يا بابا عمر، تحكّم باللعبة بالكامل:</p>
         
+        <!-- قسم تحويل العملات المطور للاعبين بالاسم -->
+        <div class="list-card" style="border: 1px solid lime;">
+            <h3 style="color: lime; margin: 5px 0;">🎁 إرسال عملات وجواهر للاعب معين</h3>
+            <input type="text" id="adminTargetPlayer" class="admin-input-field" placeholder="اسم اللاعب بالظبط...">
+            <input type="number" id="adminGiftStones" class="admin-input-field" placeholder="عدد الأحجار المضافة">
+            <input type="number" id="adminGiftGems" class="admin-input-field" placeholder="عدد الجواهر المضافة">
+            <button class="admin-action-btn" style="background: #27ae60 !important;" id="admGiftBtn">⚡ إرسال الهدية فوراً</button>
+        </div>
+
         <div class="list-card" style="border: 1px solid gold;">
             <input type="text" id="adminMsgInput" class="admin-input-field" placeholder="اكتب رسالة للاعبين هنا...">
             <button class="admin-action-btn" style="background: #27ae60 !important;" id="admSendMsgBtn">📢 بث الرسالة لايف</button>
@@ -781,28 +805,16 @@
     </div>
 
     <script>
-        // حماية أمنية 1: منع كليك يمين واختصارات المتصفح الشهيرة لـ F12 و Inspect Element
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.addEventListener('keydown', event => {
-            if (event.keyCode === 123) { // F12
-                event.preventDefault();
-                return false;
-            }
-            if (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 74 || event.keyCode === 67)) { 
-                event.preventDefault();
-                return false;
-            }
-            if (event.ctrlKey && event.keyCode === 85) { 
-                event.preventDefault();
-                return false;
-            }
+            if (event.keyCode === 123) { event.preventDefault(); return false; }
+            if (event.ctrlKey && event.shiftKey && (event.keyCode === 73 || event.keyCode === 74 || event.keyCode === 67)) { event.preventDefault(); return false; }
+            if (event.ctrlKey && event.keyCode === 85) { event.preventDefault(); return false; }
         });
 
-        // حماية أمنية 2: عزل كل الكود الحساس داخل Scope مغلق تماماً لمنع استدعائه من الـ Console
         (function() {
-            // كود الاتصال بـ Supabase
             const SUPABASE_URL = 'https://pwmpugkyuwzfaegcqubf.supabase.co'; 
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bXB1Z2t5dXd6ZmFlZ2NxdWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDU5MDksImV4cCI6MjA5NzkyMTkwOX0.l2BfJPUFynRfoEy4jWVB9Mc2CgwdLDKvQTO77fDh6L4'; // ضع الـ Anon key الخاص بك هنا
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3bXB1Z2t5dXd6ZmFlZ2NxdWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDU5MDksImV4cCI6MjA5NzkyMTkwOX0.l2BfJPUFynRfoEy4jWVB9Mc2CgwdLDKvQTO77fDh6L4'; 
 
             const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             let liveChannel = null;
@@ -818,6 +830,7 @@
             Object.values(sounds).forEach(sound => sound.volume = 0.4);
 
             let playerName = "";
+            let alliancePartner = null; // اسم الحليف الحالي إن وُجد
             let stones = 0;
             let gems = 0; 
             let totalStonesMined = 0; 
@@ -859,7 +872,7 @@
                 { id: "radex", name: "radex ⚡", cost: 100, file: "assets/radex.png", perk: "الميزة: تمنحك ضربات الماينر الأساسية +4 خبرة (EXP) إضافية." },
                 { id: "maodyy", name: "maodyy التوب 🔥", cost: 100, file: "assets/maodyy.png", perk: "الميزة: تضرب القوة الأساسية في +3 نقاط دبل ثابتة." },
                 { id: "kharshama", name: "خرشمه 💥", cost: 100, file: "assets/kharshama.png", perk: "الميزة: تقليص وقت انتظار الإيفنتات العشوائية بمقدار دقيقتين كاملتين." },
-                { id: "hidden_big_gang", name: "الزعيم السري 👑", cost: 999999, file: "assets/big_gang_skin.png", perk: "الميزة: سكن المطور الخفي الأسطوري! يمنحك هيبة وجاذبية الزعيم الأكبر." }
+                { id: "hidden_big_gang", name: "الزعيم السري 👑", cost: 999999, file: "assets/big_gang_skin.png", perk: "الميزة: يمنحك قوة هجوم +20%، وسرعة عمال +15%، ومكافأة أحجار +10%!" }
             ];
 
             let activeEvent = null; 
@@ -877,7 +890,8 @@
                 { id: "boss_1_ach", name: "قاهر الصخرة العظيمة 🪨", desc: "اهزم الوحش الصخري العملاق", title: "مدمر الجبابرة 🪨", color: "#e67e22", perkText: "الميزة: زيادة قوة ضرباتك بمقدار +2 قوة إضافية ثابتة.", check: () => boss1Defeated, getProgress: () => ({ current: boss1Defeated ? 1 : 0, target: 1 }) },
                 { id: "boss_2_ach", name: "سارق الكريستال المشع 💎", desc: "اهزم صخرة الكريستال المشعة", title: "جامع البلورات 💎", color: "#9b59b6", perkText: "الميزة: ضربات العمال التلقائية تصبح أسرع بمقدار 20%.", check: () => boss2Defeated, getProgress: () => ({ current: boss2Defeated ? 1 : 0, target: 1 }) },
                 { id: "boss_3_ach", name: "محطم الآثار القديمة 🤖", desc: "اهزم حارس المناجم القديم", title: "صائد الغولم 🤖", color: "#34495e", perkText: "الميزة: ضربات العمال التلقائية تعطي قوة دبل (Double Damage).", check: () => boss3Defeated, getProgress: () => ({ current: boss3Defeated ? 1 : 0, target: 1 }) },
-                { id: "boss_4_ach", name: "مطفئ النيازك المشتعلة ☄️", desc: "اهزم صخرة النيزك المشتعلة", title: "ملك الفضاء ☄️", color: "#e74c3c", perkText: "الميزة: مضاعفة جميع الأحجار المجمعة من أي صخرة مرتين (x2 Stones)!", check: () => boss4Defeated, getProgress: () => ({ current: boss4Defeated ? 1 : 0, target: 1 }) }
+                { id: "boss_4_ach", name: "مطفئ النيازك المشتعلة ☄️", desc: "اهزم صخرة النيزك المشتعلة", title: "ملك الفضاء ☄️", color: "#e74c3c", perkText: "الميزة: مضاعفة جميع الأحجار المجمعة من أي صخرة مرتين (x2 Stones)!", check: () => boss4Defeated, getProgress: () => ({ current: boss4Defeated ? 1 : 0, target: 1 }) },
+                { id: "rare_boss_drop", name: "دروب الزعماء النادر 🎲", desc: "اهزم الزعماء بفرصة 15% للحصول على اللقب النادر", title: "سفاح الزعماء ☠️", color: "#ff0000", perkText: "الميزة: يمنحك هيبة مرعبة + 5% فرصة للحصول على جواهر من الصخور العادية.", check: () => unlockedTitles.includes("سفاح الزعماء ☠️"), getProgress: () => ({ current: unlockedTitles.includes("سفاح الزعماء ☠️") ? 1 : 0, target: 1 }) }
             ];
 
             let isBossActive = false;
@@ -887,10 +901,10 @@
             let activeBossId = 0;
 
             const bossData = [
-                { id: 1, name: "الوحش الصخري العملاق 🪨", reqLevel: 5, hp: 150, reward: 500, img: "assets/boss1.png" },
-                { id: 2, name: "صخرة الكريستال المشعة 💎", reqLevel: 15, hp: 800, reward: 2500, img: "assets/boss2.png" },
-                { id: 3, name: "حارس المناجم القديم 🤖", reqLevel: 30, hp: 5000, reward: 15000, img: "assets/boss3.png" },
-                { id: 4, name: "صخرة النيزك المشتعلة ☄️", reqLevel: 50, hp: 30000, reward: 80000, img: "assets/boss4.png" }
+                { id: 1, name: "الوحش الصخري العملاق 🪨", reqLevel: 5, hp: 1500, reward: 500, img: "assets/boss1.png" },
+                { id: 2, name: "صخرة الكريستال المشعة 💎", reqLevel: 15, hp: 8000, reward: 2500, img: "assets/boss2.png" },
+                { id: 3, name: "حارس المناجم القديم 🤖", reqLevel: 30, hp: 50000, reward: 15000, img: "assets/boss3.png" },
+                { id: 4, name: "صخرة النيزك المشتعلة ☄️", reqLevel: 50, hp: 300000, reward: 80000, img: "assets/boss4.png" }
             ];
 
             const rock = document.getElementById("rock");
@@ -925,6 +939,7 @@
             const skinsModal = document.getElementById("skinsModal");
             const adminModal = document.getElementById("adminModal");
             const leaderboardModal = document.getElementById("leaderboardModal");
+            const allianceModal = document.getElementById("allianceModal");
             const adminBtnToggle = document.getElementById("adminBtnToggle");
 
             function createFloatingText(x, y, text, color = "white") {
@@ -942,7 +957,7 @@
                 let confirmation = confirm("⚠️ هل أنت متأكد تماماً أنك تريد مسح جميع البيانات والإنجازات والبدء من جديد كلياً؟");
                 if (confirmation) {
                     localStorage.removeItem("rockMinerSaveV10"); 
-                    playerName = ""; stones = 0; gems = 0; totalStonesMined = 0; damage = 1; workers = 0;
+                    playerName = ""; alliancePartner = null; stones = 0; gems = 0; totalStonesMined = 0; damage = 1; workers = 0;
                     workersEnabled = true; level = 1; currentExp = 0; maxHealth = 10; health = maxHealth;
                     powerCost = 50; workerCost = 100; activeTitle = "بلا لقب ⚒️"; unlockedTitles = ["بلا لقب ⚒️"];
                     activeSkin = "الأساسي"; purchasedSkins = ["الأساسي"]; totalCrits = 0; totalLegendsFound = 0;
@@ -1006,15 +1021,78 @@
                 liveChannel = supabaseClient.channel('amer_the_miner_live');
                 liveChannel
                     .on('broadcast', { event: 'admin_notification' }, (payload) => {
-                        alert(`📢 إشعار مباشر من الإدارة:\n\n${payload.payload.message}`);
+                        alert(`📢 إشعار مباشر:\n\n${payload.payload.message}`);
                     })
                     .on('broadcast', { event: 'game_event' }, (payload) => {
                         const forcedEvent = payload.payload.eventName;
-                        // حظر استدعاء الزعيم الأكبر عبر البث لغير البابا عمر للحماية القصوى
                         if (forcedEvent === 'big_gang_boss' && playerName !== "البابا عمر") {
                             return;
                         }
                         triggerSpecificEvent(forcedEvent);
+                    })
+                    // استقبال الهدايا من الأدمن للاعب معين بالاسم
+                    .on('broadcast', { event: 'admin_gift' }, (payload) => {
+                        if (payload.payload.targetPlayer === playerName) {
+                            let addStones = parseInt(payload.payload.stones) || 0;
+                            let addGems = parseInt(payload.payload.gems) || 0;
+                            stones += addStones;
+                            totalStonesMined += addStones;
+                            gems += addGems;
+                            showReward(`هدية الأدمن: +${addStones} حجر | +${addGems} جوهرة! 🎁`, "gold");
+                            update();
+                        }
+                    })
+                    // استقبال طلب التحالف
+                    .on('broadcast', { event: 'alliance_invite' }, (payload) => {
+                        if (payload.payload.receiver === playerName) {
+                            if (alliancePartner) return; // لو هو في تحالف يتجاهل الطلب تلقائياً
+                            let accept = confirm(`🤝 اللاعب [${payload.payload.sender}] يطلب التحالف معك! هل توافق على مشاركته المنجم والزعماء؟`);
+                            if (accept) {
+                                alliancePartner = payload.payload.sender;
+                                liveChannel.send({
+                                    type: 'broadcast',
+                                    event: 'alliance_accept',
+                                    payload: { sender: payload.payload.sender, receiver: playerName }
+                                });
+                                showReward(`تم قبول التحالف مع ${alliancePartner}! 🤝`, "lime");
+                                update();
+                            }
+                        }
+                    })
+                    // تأكيد نجاح التحالف للطرف الآخر
+                    .on('broadcast', { event: 'alliance_accept' }, (payload) => {
+                        if (payload.payload.sender === playerName) {
+                            alliancePartner = payload.payload.receiver;
+                            alert(`🎉 مبروك! قبل [${alliancePartner}] طلب تحالفك، أنتما الآن معاً على نفس الصخرة!`);
+                            update();
+                        }
+                    })
+                    // مزامنة ضربات الصخور المشتركة
+                    .on('broadcast', { event: 'alliance_hit' }, (payload) => {
+                        if (payload.payload.target === playerName && payload.payload.sender === alliancePartner) {
+                            const allyMiner = document.getElementById("allyMiner");
+                            allyMiner.classList.add("miner-hit");
+                            setTimeout(() => allyMiner.classList.remove("miner-hit"), 120);
+                            
+                            health -= payload.payload.damage;
+                            createFloatingText(window.innerWidth / 2 - 80, window.innerHeight / 2, "🤝 " + Math.floor(payload.payload.damage), payload.payload.isCrit ? "gold" : "white");
+                            if (health <= 0) { breakRock(); }
+                            update();
+                        }
+                    })
+                    // مزامنة دخول قتال الزعماء المشترك
+                    .on('broadcast', { event: 'alliance_boss' }, (payload) => {
+                        if (payload.payload.target === playerName && payload.payload.sender === alliancePartner) {
+                            startBoss(payload.payload.bossId, true);
+                        }
+                    })
+                    // إنهاء التحالف
+                    .on('broadcast', { event: 'alliance_leave' }, (payload) => {
+                        if (payload.payload.target === playerName) {
+                            alert(`❌ قام [${alliancePartner}] بإنهاء التحالف الحالي.`);
+                            alliancePartner = null;
+                            update();
+                        }
                     })
                     .subscribe();
             }
@@ -1028,6 +1106,28 @@
                 await liveChannel.send({ type: 'broadcast', event: 'admin_notification', payload: { message: text } });
                 alert("تم إرسال الرسالة بنجاح لجميع اللاعبين! 🎉");
                 document.getElementById("adminMsgInput").value = "";
+            };
+
+            // تحويل العملات للاعب بالاسم من قبل الأدمن
+            document.getElementById("admGiftBtn").onclick = async () => {
+                if (playerName !== "البابا عمر") return;
+                const target = document.getElementById("adminTargetPlayer").value.trim();
+                const giftStones = parseInt(document.getElementById("adminGiftStones").value) || 0;
+                const giftGems = parseInt(document.getElementById("adminGiftGems").value) || 0;
+                
+                if (!target) { alert("الرجاء كتابة اسم اللاعب المستهدف بالظبط!"); return; }
+                if (!liveChannel) setupRealtimeConnection();
+                
+                await liveChannel.send({ 
+                    type: 'broadcast', 
+                    event: 'admin_gift', 
+                    payload: { targetPlayer: target, stones: giftStones, gems: giftGems } 
+                });
+                
+                alert(`🎉 تم إرسال الهدية بنجاح للاعب [${target}].`);
+                document.getElementById("adminTargetPlayer").value = "";
+                document.getElementById("adminGiftStones").value = "";
+                document.getElementById("adminGiftGems").value = "";
             };
 
             // بث إيفنت الإدمن
@@ -1102,6 +1202,9 @@
                     if (modalElement === leaderboardModal) {
                         fetchAndRenderLeaderboard();
                     }
+                    if (modalElement === allianceModal) {
+                        renderAllianceMenu();
+                    }
                     modalElement.style.display = "block";
                 }
             }
@@ -1113,6 +1216,7 @@
                 skinsModal.style.display = "none";
                 adminModal.style.display = "none";
                 leaderboardModal.style.display = "none";
+                allianceModal.style.display = "none";
             }
             window.closeAllModals = closeAllModals;
 
@@ -1121,6 +1225,7 @@
             document.getElementById("titlesBtnToggle").onclick = () => toggleModal(titlesModal);
             document.getElementById("skinsBtnToggle").onclick = () => toggleModal(skinsModal);
             document.getElementById("leaderboardBtnToggle").onclick = () => toggleModal(leaderboardModal);
+            document.getElementById("allianceBtnToggle").onclick = () => toggleModal(allianceModal);
             adminBtnToggle.onclick = () => toggleModal(adminModal);
 
             document.getElementById("admStonesBtn").onclick = () => { if(playerName === "البابا عمر") { stones += 10000; totalStonesMined += 10000; update(); } };
@@ -1146,7 +1251,6 @@
 
                 if (health < 0) health = 0;
                 
-                // تحديث نصوص العداد العلوي والدم الحالي بدقة للزعماء والصخور
                 if (activeEvent === 'big_gang_boss') {
                     let minReq = Math.ceil(maxHealth * 0.10);
                     healthText.innerText = `❤️ ${Math.floor(health)} / ${Math.floor(maxHealth)} (الحد الأدنى للضربة: ${minReq})`;
@@ -1170,6 +1274,18 @@
                     document.getElementById("luckScrollBtn").disabled = false;
                 }
 
+                // إدارة وعرض تحريك الحليف على الشاشة مواجهاً للاعب
+                const playerContainer = document.querySelector(".miner-container:not(#allyContainer)");
+                const allyContainer = document.getElementById("allyContainer");
+                if (alliancePartner) {
+                    playerContainer.style.left = "60%";
+                    allyContainer.style.display = "flex";
+                    document.getElementById("allyNamePlate").innerText = alliancePartner;
+                } else {
+                    playerContainer.style.left = "55%";
+                    allyContainer.style.display = "none";
+                }
+
                 checkAchievements(); 
                 renderBossList();
                 renderTitlesList();
@@ -1178,7 +1294,6 @@
                 syncWithSupabase();
             }
 
-            // مزامنة تلقائية لسكور اللاعب مع السحاب
             async function syncWithSupabase() {
                 if (!playerName || playerName === "") return;
                 try {
@@ -1188,6 +1303,7 @@
                             username: playerName, 
                             score: totalStonesMined, 
                             coins: Math.floor(stones),
+                            alliance: alliancePartner, // حفظ اسم التحالف لحماية عدم التكرار والتدقيق
                             updated_at: new Date()
                         }, { onConflict: 'username' });
                 } catch(e) { console.log("خطأ مزامنة السحاب:", e); }
@@ -1199,6 +1315,7 @@
                 if (activeTitle === "👑 الإمبراطور") baseDamage += 5;
                 if (activeSkin === "maodyy التوب 🔥") baseDamage += 3;
                 if (activeEvent === 'volcano') baseDamage *= 3;
+                if (activeSkin === "الزعيم السري 👑") baseDamage = Math.floor(baseDamage * 1.20);
                 return baseDamage;
             }
 
@@ -1235,6 +1352,12 @@
                 let goldAmount = 100 + Math.floor(totalStonesMined / 20); 
 
                 if (activeTitle === "المحظوظ الأسطوري 💎") { redAmount *= 1.5; goldAmount *= 1.5; }
+                
+                if (activeSkin === "الزعيم السري 👑") {
+                    normalAmount = Math.floor(normalAmount * 1.10);
+                    redAmount = Math.floor(redAmount * 1.10);
+                    goldAmount = Math.floor(goldAmount * 1.10);
+                }
 
                 let chance = Math.random();
                 let legendThreshold = hasLuckScroll ? 0.08 : 0.03;
@@ -1263,6 +1386,19 @@
                     let finalReward = activeBossReward * multiplier;
                     stones += finalReward; totalStonesMined += finalReward;
                     showReward(finalReward, "gold");
+
+                    if (Math.random() < 0.15 && !unlockedTitles.includes("سفاح الزعماء ☠️")) {
+                        unlockedTitles.push("سفاح الزعماء ☠️");
+                        alert("🎉 مبروك! لقد حالفك الحظ وحصلت على اللقب النادر جداً: سفاح الزعماء ☠️");
+                        if (liveChannel) {
+                            liveChannel.send({ 
+                                type: 'broadcast', 
+                                event: 'admin_notification', 
+                                payload: { message: `🏆 اللاعب الأسطوري [${playerName}] أسقط الزعيم وحصل على اللقب النادر جداً: سفاح الزعماء ☠️!` } 
+                            });
+                        }
+                    }
+
                     endBossFight();
                 } 
                 else if (activeEvent !== null) {
@@ -1290,12 +1426,12 @@
                         clearInterval(bossTimerInterval); endEvent();
                     }
                     else if (activeEvent === 'volcano') {
-                        let volcanoBonus = (300 + level * 30) * multiplier;
+                        let volcanoBonus = (300 + level * 30) * multiplier * 3; 
                         stones += volcanoBonus; totalStonesMined += volcanoBonus;
-                        showReward(volcanoBonus, "#e74c3c");
-                        endEvent();
+                        showReward("+" + volcanoBonus + " 🌋", "#e74c3c");
+                        maxHealth = level * 60 + 500;
+                        health = maxHealth;
                     }
-                    // جوائز قتل الزعيم الأكبر (الجنج الأكبر) ونسبة السكن السري
                     else if (activeEvent === 'big_gang_boss') {
                         level += 5; 
                         gems += 50; 
@@ -1304,7 +1440,6 @@
                         
                         showReward("مات الجنج الأكبر! 👑 +5 ليفلات، +50 جوهرة، +1,000,000 صخرة", "gold");
                         
-                        // فرصة 20% للحصول على السكن السري الخفي
                         if (Math.random() < 0.20) {
                             if (!purchasedSkins.includes("الزعيم السري 👑")) {
                                 purchasedSkins.push("الزعيم السري 👑");
@@ -1322,6 +1457,11 @@
                     showReward(finalAmount, reward.color);
 
                     if (activeTitle === "قاتل الجوبلن 👺" && Math.random() < 0.05) { gems += 1; }
+                    
+                    if (activeTitle === "سفاح الزعماء ☠️" && Math.random() < 0.05) {
+                        gems += 2;
+                        createFloatingText(window.innerWidth/2, window.innerHeight/2, "+2 جوهرة 💎", "#00e5ff");
+                    }
 
                     let expGain = 5 + Math.floor(level * 0.3);
                     if (activeTitle === "المحفراتي ⛏️") expGain = Math.floor(expGain * 1.2);
@@ -1335,16 +1475,25 @@
                         showReward("LEVEL UP! ⭐", "gold"); 
                     }
 
-                    maxHealth = 10 + (level * 8);
+                    maxHealth = 10 + Math.floor(totalStonesMined * 0.05);
                     health = maxHealth;
                 }
                 update();
             }
 
-            function startBoss(bossId) {
+            function startBoss(bossId, isSynced = false) {
                 if (activeEvent !== null) { alert("لا يمكنك استدعاء زعيم أثناء وجود حدث خاص نشط!"); return; }
                 const boss = bossData.find(b => b.id === bossId);
                 if (!boss) return;
+
+                // إرسال دعوة تلقائية للحليف لخوض معركة الزعيم سوياً
+                if (alliancePartner && !isSynced) {
+                    liveChannel.send({
+                        type: 'broadcast',
+                        event: 'alliance_boss',
+                        payload: { sender: playerName, target: alliancePartner, bossId: bossId }
+                    });
+                }
 
                 closeAllModals(); isBossActive = true; activeBossId = boss.id;
                 targetName.innerText = boss.name; maxHealth = boss.hp; health = maxHealth; activeBossReward = boss.reward;
@@ -1364,8 +1513,15 @@
 
                 clearInterval(bossTimerInterval);
                 bossTimerInterval = setInterval(() => {
-                    timeLeft--; bossTimer.innerText = timeLeft;
-                    if (timeLeft <= 0) { clearInterval(bossTimerInterval); endBossFight(); }
+                    timeLeft--; 
+                    if (timeLeft <= 0) { 
+                        timeLeft = 0;
+                        bossTimer.innerText = timeLeft;
+                        clearInterval(bossTimerInterval); 
+                        endBossFight(); 
+                    } else {
+                        bossTimer.innerText = timeLeft;
+                    }
                 }, 1000);
                 update();
             }
@@ -1376,7 +1532,7 @@
                 rock.src = "assets/rock.png"; 
                 rock.style.width = window.innerWidth <= 768 ? "200px" : "400px"; 
                 rock.style.bottom = window.innerWidth <= 768 ? "10px" : "0px"; 
-                targetName.innerText = "صحة الصخرة"; maxHealth = 10 + (level * 8); health = maxHealth; update();
+                targetName.innerText = "صحة الصخرة"; maxHealth = 10 + Math.floor(totalStonesMined * 0.05); health = maxHealth; update();
             }
 
             setInterval(() => {
@@ -1391,11 +1547,16 @@
                     }
                 }
 
+                // تعديل منطق عداد الوقت الصغير ليوضح حالة اللعبة دوماً بذكاء
                 if (!isBossActive && activeEvent === null) {
+                    document.getElementById("eventCountdownLabel").innerText = "حدث قادم:";
                     let reduce = (activeSkin === "خرشمه 💥") ? 2 : 1;
                     nextEventCooldown -= reduce;
-                    if (nextEventCooldown <= 0) { triggerRandomEvent(false); }
+                    if (nextEventCooldown <= 0) { nextEventCooldown = 0; triggerRandomEvent(false); }
+                } else {
+                    document.getElementById("eventCountdownLabel").innerText = "جاري الحدث ⚔️";
                 }
+                
                 let minutes = Math.max(0, Math.floor(nextEventCooldown / 60));
                 let seconds = Math.max(0, nextEventCooldown % 60);
                 document.getElementById("eventCountdownText").innerText = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -1410,7 +1571,6 @@
             }
 
             function triggerSpecificEvent(picked) {
-                // حظر ومنع رسبنة الجنج الأكبر لأي شخص غير البابا عمر تماماً
                 if (picked === 'big_gang_boss' && playerName !== "البابا عمر") {
                     alert("❌ خطأ أمني: أنت لا تملك صلاحية استدعاء الجنج الأكبر!");
                     return;
@@ -1418,7 +1578,7 @@
 
                 if (isBossActive) endBossFight();
                 timeLeft = 60;
-                healthBar.className = "bar-bg"; // Reset class
+                healthBar.className = "bar-bg"; 
 
                 if (picked === 'lucky') {
                     activeEvent = 'lucky'; targetName.innerText = "✨ صخرة الحظ المشتعلة ✨"; maxHealth = level * 15 + 40;
@@ -1450,21 +1610,20 @@
                     rock.style.width = window.innerWidth <= 768 ? "200px" : "400px"; 
                     rock.style.bottom = window.innerWidth <= 768 ? "10px" : "-10px";
                     document.body.style.background = "url('assets/volcano_bg.png') no-repeat center center fixed"; document.body.style.backgroundSize = "cover";
-                    eventBanner.innerText = "قوتك x3! 🔥"; showBottomNotifier("🌋", "ثوران البركان");
+                    eventBanner.innerText = "المكافآت x3 والضرب مستمر! 🔥"; showBottomNotifier("🌋", "ثوران البركان");
                     healthBar.classList.add("event-health-bar");
                 }
-                // إضافة مواصفات وإحداثيات الجنج الأكبر في العداد العلوي والدم
                 else if (picked === 'big_gang_boss') {
                     activeEvent = 'big_gang_boss';
                     targetName.innerText = "👑 الجنج الأكبر (الزعيم الأكبر) 👑";
-                    maxHealth = 250000; // دمه ربع مليون لضمان قوة الدمج المطلوب (10% = 25,000)
+                    maxHealth = 250000; 
                     rock.src = "assets/big_gang.png";
                     rock.style.width = window.innerWidth <= 768 ? "230px" : "500px";
                     rock.style.bottom = window.innerWidth <= 768 ? "15px" : "0px";
                     eventBanner.innerText = "شرط القتال: يجب أن تكون ضربتك دمج 10% على الأقل! 👑";
                     showBottomNotifier("👑", "الجنج الأكبر نشط");
                     healthBar.classList.add("big-boss-health-bar");
-                    timeLeft = 120; // دقيقتين كاملين لقتله
+                    timeLeft = 120; 
                 }
 
                 health = maxHealth;
@@ -1473,8 +1632,17 @@
 
                 clearInterval(bossTimerInterval);
                 bossTimerInterval = setInterval(() => {
-                    timeLeft--; bossTimer.innerText = timeLeft; navigatorTimer.innerText = timeLeft + "ث";
-                    if (timeLeft <= 0) { clearInterval(bossTimerInterval); endEvent(); }
+                    timeLeft--; 
+                    if (timeLeft <= 0) { 
+                        timeLeft = 0;
+                        bossTimer.innerText = timeLeft;
+                        notifierTimer.innerText = timeLeft + "ث";
+                        clearInterval(bossTimerInterval); 
+                        endEvent(); 
+                    } else {
+                        bossTimer.innerText = timeLeft; 
+                        notifierTimer.innerText = timeLeft + "ث"; // تم تصحيح الـ Typo هنا من navigatorTimer إلى notifierTimer لمنع توقف السكريبت
+                    }
                 }, 1000);
                 update();
             }
@@ -1491,7 +1659,7 @@
                 rock.src = "assets/rock.png"; 
                 rock.style.width = window.innerWidth <= 768 ? "200px" : "400px"; 
                 rock.style.bottom = window.innerWidth <= 768 ? "10px" : "0px";
-                targetName.innerText = "صحة الصخرة"; maxHealth = 10 + (level * 8); health = maxHealth;
+                targetName.innerText = "صحة الصخرة"; maxHealth = 10 + Math.floor(totalStonesMined * 0.05); health = maxHealth;
                 nextEventCooldown = maxCooldownValue; update();
             }
 
@@ -1537,6 +1705,81 @@
             document.getElementById("powerBtn").onclick = buyPower;
             document.getElementById("workerBtn").onclick = buyWorker;
 
+            // بناء رندر قائمة التحالفات ديناميكياً
+            window.renderAllianceMenu = function() {
+                const container = document.getElementById("allianceStatusContent");
+                if (!alliancePartner) {
+                    container.innerHTML = `
+                        <div class="list-card">
+                            <h3>🤝 ابدأ تحالفاً جديداً الآن</h3>
+                            <p>أدخل اسم اللاعب لتكوين قوة مشتركة والتنقيب معاً على صخرة واحدة!</p>
+                            <input type="text" id="allianceTargetInput" class="admin-input-field" placeholder="اكتب اسم اللاعب بالظبط...">
+                            <button class="shop-btn" onclick="sendAllianceInvite()">إرسال دعوة تحالف ✉️</button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="list-card" style="border: 2px solid #2ecc71;">
+                            <h3 style="color:#2ecc71;">🤝 أنت حالياً في تحالف نشط</h3>
+                            <p>الحليف الحالي: <b>${alliancePartner}</b></p>
+                            <p style="font-size:12px; color:gold;">أنتما تقفان الآن معاً وتتشاركان في دمج الحفر واستدعاء الزعماء!</p>
+                            <button class="admin-action-btn" onclick="leaveAlliance()">❌ مغادرة وإنهاء التحالف</button>
+                        </div>
+                    `;
+                }
+            };
+
+            // معالجة إرسال طلب التحالف وفحص عدم تكراره
+            window.sendAllianceInvite = async function() {
+                const target = document.getElementById("allianceTargetInput").value.trim();
+                if (!target) { alert("اكتب اسم اللاعب أولاً!"); return; }
+                if (target === playerName) { alert("لا يمكنك التحالف مع نفسك يا بطل!"); return; }
+
+                // التحقق من حالة اللاعب الآخر من قاعدة البيانات لحظر التحالف المزدوج
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('players')
+                        .select('username, alliance')
+                        .eq('username', target)
+                        .single();
+
+                    if (error || !data) {
+                        alert("❌ هذا اللاعب غير موجود أو لم يقم بتسجيل الدخول مسبقاً!");
+                        return;
+                    }
+
+                    if (data.alliance) {
+                        alert(`❌ لا يمكن التحالف! اللاعب [${target}] موجود في تحالف آخر بالفعل!`);
+                        return;
+                    }
+
+                    if (!liveChannel) setupRealtimeConnection();
+                    await liveChannel.send({
+                        type: 'broadcast',
+                        event: 'alliance_invite',
+                        payload: { sender: playerName, receiver: target }
+                    });
+                    alert(`✉️ تم إرسال طلب تحالف لايف إلى [${target}]. بانتظار موافقته...`);
+                } catch(e) {
+                    alert("فشل فحص السيرفر، يرجى المحاولة لاحقاً.");
+                }
+            };
+
+            // إنهاء مغادرة التحالف
+            window.leaveAlliance = async function() {
+                if (!alliancePartner) return;
+                if (confirm(`هل أنت متأكد من فك وإلغاء التحالف مع [${alliancePartner}]؟`)) {
+                    await liveChannel.send({
+                        type: 'broadcast',
+                        event: 'alliance_leave',
+                        payload: { sender: playerName, target: alliancePartner }
+                    });
+                    alliancePartner = null;
+                    closeAllModals();
+                    update();
+                }
+            };
+
             function renderSkinsList() {
                 const container = document.getElementById("skinsList");
                 container.innerHTML = "";
@@ -1561,21 +1804,39 @@
                     let isEquipped = activeSkin === skin.name;
                     let btnId = `skin_btn_${index}`;
 
-                    card.innerHTML = `
-                        <h3>${skin.name}</h3>
-                        <div class="title-perk-tooltip"><div>${skin.perk}</div></div>
-                        ${isOwned ? `
-                            <button class="title-equip-btn ${isEquipped ? 'equipped' : ''}" id="${btnId}">
-                                ${isEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
-                            </button>
-                        ` : `
-                            <button class="shop-btn" style="background:#9b59b6" id="${btnId}" disabled>سكن سري خاص بالزعماء 🔒</button>
-                        `}
-                    `;
+                    if (skin.id === "hidden_big_gang") {
+                        card.innerHTML = `
+                            <h3>${skin.name}</h3>
+                            <div class="title-perk-tooltip"><div>${skin.perk}</div></div>
+                            ${isOwned ? `
+                                <button class="title-equip-btn ${isEquipped ? 'equipped' : ''}" id="${btnId}">
+                                    ${isEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
+                                </button>
+                            ` : `
+                                <button class="shop-btn" style="background:#9b59b6" id="${btnId}" disabled>سكن سري خاص بالزعيم الأكبر 🔒</button>
+                            `}
+                        `;
+                    } else {
+                        card.innerHTML = `
+                            <h3>${skin.name}</h3>
+                            <div class="title-perk-tooltip"><div>${skin.perk}</div></div>
+                            ${isOwned ? `
+                                <button class="title-equip-btn ${isEquipped ? 'equipped' : ''}" id="${btnId}">
+                                    ${isEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
+                                </button>
+                            ` : `
+                                <button class="shop-btn" style="background:#9b59b6" id="${btnId}">
+                                    شراء المظهر 🛒 <br><span style="color:#00ffff;">💎 ${skin.cost} جوهرة</span>
+                                </button>
+                            `}
+                        `;
+                    }
                     container.appendChild(card);
                     
                     if (isOwned) {
                         document.getElementById(btnId).onclick = () => equipSkin(skin.name, skin.file);
+                    } else if (skin.id !== "hidden_big_gang") {
+                        document.getElementById(btnId).onclick = () => buySkin(skin.name, skin.cost);
                     }
                 });
             }
@@ -1629,7 +1890,7 @@
                             <div class="ach-progress-container"><div class="ach-progress-bar" style="width: ${pct}%"></div></div><span class="ach-progress-text">${Math.floor(currentNum)} / ${targetNum}</span>`;
 
                     card.innerHTML = `
-                        <h3 style="color: ${ach.color}">${ach.name}</h3><p>اللقب: <b>${ach.title}</b></p>
+                        <h3 style="color: ${ach.color}">${ach.name}</h3><p>اللقلِب: <b>${ach.title}</b></p>
                         <div class="title-perk-tooltip"><div>${ach.perkText}</div>${progressHTML}</div>
                         <button class="title-equip-btn ${isEquipped ? 'equipped' : ''}" ${!hasUnlocked ? 'disabled' : ''} id="${btnId}">
                             ${!hasUnlocked ? "مغلق 🔒" : isEquipped ? "مجهز حالياً ✨" : "تجهيز اللقب 👤"}
@@ -1675,21 +1936,28 @@
                     } else {
                         sounds.hit.cloneNode(true).play();
                     }
+
+                    // إرسال الضرر للحليف لايف لمزامنة كسر الصخرة معاً
+                    if (alliancePartner) {
+                        liveChannel.send({
+                            type: 'broadcast',
+                            event: 'alliance_hit',
+                            payload: { sender: playerName, target: alliancePartner, damage: dmg, isCrit: isCrit }
+                        });
+                    }
                 } else {
                     rock.classList.add("rock-hit"); setTimeout(() => rock.classList.remove("rock-hit"), 80);
                 }
 
                 if (activeEvent === 'lucky' && isPlayer) { dmg = Math.floor(dmg * 1.5); }
 
-                // شرط الـ 10% للزعيم الأكبر (الجنج الأكبر):
                 if (activeEvent === 'big_gang_boss') {
-                    let requiredMinDamage = maxHealth * 0.10; // 10% من صحته القصوى الكلية
+                    let requiredMinDamage = maxHealth * 0.10;
                     if (dmg < requiredMinDamage) {
-                        // العمال التلقائيين لن يؤثروا، والضربات الضعيفة ستظهر 0 دمج لمنع قتل الزعيم دون قوة حقيقية
                         if (isPlayer) {
                             createFloatingText(pageX, pageY, "🛡️ محمي! (دمجك أقل من 10%)", "red");
                         }
-                        return; // إلغاء دمج الضربة نهائياً
+                        return; 
                     }
                 }
 
@@ -1730,6 +1998,8 @@
                 
                 let baseSpeed = (activeTitle === "جامع البلورات 💎") ? 800 : 1000;
                 if (activeSkin === "العصابه 🕶️") baseSpeed -= 200;
+                if (activeSkin === "الزعيم السري 👑") baseSpeed = Math.floor(baseSpeed * 0.85);
+
                 let finalSpeed = (activeEnergyDrinkTime > 0) ? (baseSpeed / 2) : baseSpeed; 
                 setTimeout(workerLoop, finalSpeed);
             }
@@ -1738,7 +2008,7 @@
             function saveGame() {
                 if(isBossActive || activeEvent !== null || playerName === "") return;
                 localStorage.setItem("rockMinerSaveV10", JSON.stringify({
-                    playerName, stones, gems, totalStonesMined, damage, workers, workersEnabled, level, currentExp, maxHealth, powerCost, workerCost, activeTitle, unlockedTitles, activeSkin, purchasedSkins,
+                    playerName, alliancePartner, stones, gems, totalStonesMined, damage, workers, workersEnabled, level, currentExp, maxHealth, powerCost, workerCost, activeTitle, unlockedTitles, activeSkin, purchasedSkins,
                     totalCrits, totalLegendsFound, boss1Defeated, boss2Defeated, boss3Defeated, boss4Defeated, goblinDefeated,
                     activeEnergyDrinkTime, hasLuckScroll
                 }));
@@ -1747,7 +2017,7 @@
             function loadGame() {
                 const data = JSON.parse(localStorage.getItem("rockMinerSaveV10"));
                 if (data) {
-                    playerName = data.playerName || ""; stones = data.stones || 0; gems = data.gems || 0; totalStonesMined = data.totalStonesMined || 0;
+                    playerName = data.playerName || ""; alliancePartner = data.alliancePartner || null; stones = data.stones || 0; gems = data.gems || 0; totalStonesMined = data.totalStonesMined || 0;
                     damage = data.damage || 1; workers = data.workers || 0; workersEnabled = data.workersEnabled !== undefined ? data.workersEnabled : true;
                     level = data.level || 1; currentExp = data.currentExp || 0; maxHealth = data.maxHealth || 10; health = maxHealth;
                     powerCost = data.powerCost || 50; workerCost = data.workerCost || 100; activeTitle = data.activeTitle || "بلا لقب ⚒️";
