@@ -161,6 +161,7 @@
 
         .boss-health-bar { background: linear-gradient(90deg, #ff0000, #990000) !important; }
         .event-health-bar { background: linear-gradient(90deg, #9b59b6, #e74c3c) !important; }
+        .big-boss-health-bar { background: linear-gradient(90deg, #ff00ea, #4a00e0) !important; }
 
         #bossTimer {
             font-size: 24px;
@@ -857,7 +858,8 @@
                 { id: "mafia", name: "العصابه 🕶️", cost: 100, file: "assets/mafia.png", perk: "الميزة: يمنح العمال التلقائيين +25% سرعة إضافية." },
                 { id: "radex", name: "radex ⚡", cost: 100, file: "assets/radex.png", perk: "الميزة: تمنحك ضربات الماينر الأساسية +4 خبرة (EXP) إضافية." },
                 { id: "maodyy", name: "maodyy التوب 🔥", cost: 100, file: "assets/maodyy.png", perk: "الميزة: تضرب القوة الأساسية في +3 نقاط دبل ثابتة." },
-                { id: "kharshama", name: "خرشمه 💥", cost: 100, file: "assets/kharshama.png", perk: "الميزة: تقليص وقت انتظار الإيفنتات العشوائية بمقدار دقيقتين كاملتين." }
+                { id: "kharshama", name: "خرشمه 💥", cost: 100, file: "assets/kharshama.png", perk: "الميزة: تقليص وقت انتظار الإيفنتات العشوائية بمقدار دقيقتين كاملتين." },
+                { id: "hidden_big_gang", name: "الزعيم السري 👑", cost: 999999, file: "assets/big_gang_skin.png", perk: "الميزة: سكن المطور الخفي الأسطوري! يمنحك هيبة وجاذبية الزعيم الأكبر." }
             ];
 
             let activeEvent = null; 
@@ -975,7 +977,7 @@
             document.getElementById("saveNameBtn").onclick = function() {
                 let inputVal = document.getElementById("playerNameInput").value.trim();
                 if(inputVal === "") {
-                    alert("الرجاء إدخال اسم صحيح لتبدأ اللعبة!");
+                    alert("الرجاء إدخل اسم صحيح لتبدأ اللعبة!");
                     return;
                 }
                 playerName = inputVal;
@@ -1008,6 +1010,10 @@
                     })
                     .on('broadcast', { event: 'game_event' }, (payload) => {
                         const forcedEvent = payload.payload.eventName;
+                        // حظر استدعاء الزعيم الأكبر عبر البث لغير البابا عمر للحماية القصوى
+                        if (forcedEvent === 'big_gang_boss' && playerName !== "البابا عمر") {
+                            return;
+                        }
                         triggerSpecificEvent(forcedEvent);
                     })
                     .subscribe();
@@ -1015,6 +1021,7 @@
 
             // بث رسالة الإدمن
             document.getElementById("admSendMsgBtn").onclick = async () => {
+                if (playerName !== "البابا عمر") return;
                 const text = document.getElementById("adminMsgInput").value.trim();
                 if (!text) return;
                 if (!liveChannel) setupRealtimeConnection();
@@ -1025,11 +1032,13 @@
 
             // بث إيفنت الإدمن
             document.getElementById("admSendEventBtn").onclick = async () => {
+                if (playerName !== "البابا عمر") return;
                 const eventName = document.getElementById("adminEventInput").value.trim();
                 if (!eventName) return;
+                
                 if (!liveChannel) setupRealtimeConnection();
                 await liveChannel.send({ type: 'broadcast', event: 'game_event', payload: { eventName: eventName } });
-                alert(`تم إطلاق إيفنت [${eventName}] لايف للكل! 🔥`);
+                alert(`تم إطلاق إيفنت [${eventName}] لايف! 🔥`);
                 document.getElementById("adminEventInput").value = "";
                 closeAllModals();
             };
@@ -1114,14 +1123,15 @@
             document.getElementById("leaderboardBtnToggle").onclick = () => toggleModal(leaderboardModal);
             adminBtnToggle.onclick = () => toggleModal(adminModal);
 
-            document.getElementById("admStonesBtn").onclick = () => { stones += 10000; totalStonesMined += 10000; update(); };
-            document.getElementById("admGemsBtn").onclick = () => { gems += 100; update(); };
-            document.getElementById("admLevelsBtn").onclick = () => { level += 5; update(); };
+            document.getElementById("admStonesBtn").onclick = () => { if(playerName === "البابا عمر") { stones += 10000; totalStonesMined += 10000; update(); } };
+            document.getElementById("admGemsBtn").onclick = () => { if(playerName === "البابا عمر") { gems += 100; update(); } };
+            document.getElementById("admLevelsBtn").onclick = () => { if(playerName === "البابا عمر") { level += 5; update(); } };
             document.getElementById("admTitlesBtn").onclick = () => {
+                if(playerName !== "البابا عمر") return;
                 achievementsData.forEach(ach => { if (!unlockedTitles.includes(ach.title)) unlockedTitles.push(ach.title); });
                 goblinDefeated = true; update();
             };
-            document.getElementById("admEventBtn").onclick = () => { closeAllModals(); triggerRandomEvent(true); };
+            document.getElementById("admEventBtn").onclick = () => { if(playerName === "البابا عمر") { closeAllModals(); triggerRandomEvent(true); } };
 
             function update() {
                 stonesEl.innerText = Math.floor(stones);
@@ -1135,7 +1145,14 @@
                 expBar.style.width = pct + "%";
 
                 if (health < 0) health = 0;
-                healthText.innerText = Math.floor(health) + " / " + Math.floor(maxHealth);
+                
+                // تحديث نصوص العداد العلوي والدم الحالي بدقة للزعماء والصخور
+                if (activeEvent === 'big_gang_boss') {
+                    let minReq = Math.ceil(maxHealth * 0.10);
+                    healthText.innerText = `❤️ ${Math.floor(health)} / ${Math.floor(maxHealth)} (الحد الأدنى للضربة: ${minReq})`;
+                } else {
+                    healthText.innerText = Math.floor(health) + " / " + Math.floor(maxHealth);
+                }
                 healthBar.style.width = (health / maxHealth) * 100 + "%";
 
                 powerCostEl.innerText = powerCost;
@@ -1278,6 +1295,25 @@
                         showReward(volcanoBonus, "#e74c3c");
                         endEvent();
                     }
+                    // جوائز قتل الزعيم الأكبر (الجنج الأكبر) ونسبة السكن السري
+                    else if (activeEvent === 'big_gang_boss') {
+                        level += 5; 
+                        gems += 50; 
+                        stones += 1000000; 
+                        totalStonesMined += 1000000;
+                        
+                        showReward("مات الجنج الأكبر! 👑 +5 ليفلات، +50 جوهرة، +1,000,000 صخرة", "gold");
+                        
+                        // فرصة 20% للحصول على السكن السري الخفي
+                        if (Math.random() < 0.20) {
+                            if (!purchasedSkins.includes("الزعيم السري 👑")) {
+                                purchasedSkins.push("الزعيم السري 👑");
+                                alert("👑 يا إلهي! لقد حصلت على السكن الخفي النادر [الزعيم السري 👑] بنسبة 20%! تفقد خزانة الملابس الآن.");
+                            }
+                        }
+                        clearInterval(bossTimerInterval); 
+                        endEvent();
+                    }
                 }
                 else {
                     const reward = getReward();
@@ -1374,8 +1410,15 @@
             }
 
             function triggerSpecificEvent(picked) {
+                // حظر ومنع رسبنة الجنج الأكبر لأي شخص غير البابا عمر تماماً
+                if (picked === 'big_gang_boss' && playerName !== "البابا عمر") {
+                    alert("❌ خطأ أمني: أنت لا تملك صلاحية استدعاء الجنج الأكبر!");
+                    return;
+                }
+
                 if (isBossActive) endBossFight();
                 timeLeft = 60;
+                healthBar.className = "bar-bg"; // Reset class
 
                 if (picked === 'lucky') {
                     activeEvent = 'lucky'; targetName.innerText = "✨ صخرة الحظ المشتعلة ✨"; maxHealth = level * 15 + 40;
@@ -1383,6 +1426,7 @@
                     rock.style.width = window.innerWidth <= 768 ? "220px" : "550px"; 
                     rock.style.bottom = window.innerWidth <= 768 ? "10px" : "-10px";
                     eventBanner.innerText = "حدث نشط: صخرة الحظ! ⚡"; showBottomNotifier("🍀", "صخرة الحظ");
+                    healthBar.classList.add("event-health-bar");
                 } 
                 else if (picked === 'risk') {
                     activeEvent = 'risk'; targetName.innerText = "💥 صخرة التحدي والمخاطرة 💥"; maxHealth = level * 30 + 100;
@@ -1390,6 +1434,7 @@
                     rock.style.width = window.innerWidth <= 768 ? "220px" : "550px"; 
                     rock.style.bottom = window.innerWidth <= 768 ? "10px" : "-10px";
                     eventBanner.innerText = "حدث نشط: صخرة المخاطرة! ⚠️"; showBottomNotifier("⚠️", "صخرة المخاطرة");
+                    healthBar.classList.add("event-health-bar");
                 }
                 else if (picked === 'goblin') {
                     activeEvent = 'goblin'; targetName.innerText = "👺 الجوبلن السارق الماكر 👺"; maxHealth = level * 40 + 200;
@@ -1397,6 +1442,7 @@
                     rock.style.width = window.innerWidth <= 768 ? "180px" : "400px"; 
                     rock.style.bottom = window.innerWidth <= 768 ? "20px" : "30px";
                     eventBanner.innerText = "حدث نشط: جوبلن الكنوز! 🪙"; showBottomNotifier("👺", "إيفنت الجوبلن");
+                    healthBar.classList.add("event-health-bar");
                 }
                 else if (picked === 'volcano') {
                     activeEvent = 'volcano'; targetName.innerText = "🌋 بركان الغضب الثائر 🌋"; maxHealth = level * 60 + 500;
@@ -1405,10 +1451,24 @@
                     rock.style.bottom = window.innerWidth <= 768 ? "10px" : "-10px";
                     document.body.style.background = "url('assets/volcano_bg.png') no-repeat center center fixed"; document.body.style.backgroundSize = "cover";
                     eventBanner.innerText = "قوتك x3! 🔥"; showBottomNotifier("🌋", "ثوران البركان");
+                    healthBar.classList.add("event-health-bar");
+                }
+                // إضافة مواصفات وإحداثيات الجنج الأكبر في العداد العلوي والدم
+                else if (picked === 'big_gang_boss') {
+                    activeEvent = 'big_gang_boss';
+                    targetName.innerText = "👑 الجنج الأكبر (الزعيم الأكبر) 👑";
+                    maxHealth = 250000; // دمه ربع مليون لضمان قوة الدمج المطلوب (10% = 25,000)
+                    rock.src = "assets/big_gang.png";
+                    rock.style.width = window.innerWidth <= 768 ? "230px" : "500px";
+                    rock.style.bottom = window.innerWidth <= 768 ? "15px" : "0px";
+                    eventBanner.innerText = "شرط القتال: يجب أن تكون ضربتك دمج 10% على الأقل! 👑";
+                    showBottomNotifier("👑", "الجنج الأكبر نشط");
+                    healthBar.classList.add("big-boss-health-bar");
+                    timeLeft = 120; // دقيقتين كاملين لقتله
                 }
 
                 health = maxHealth;
-                eventBanner.style.display = "block"; healthBar.classList.add("event-health-bar");
+                eventBanner.style.display = "block";
                 bossTimer.style.display = "block"; bossTimer.innerText = timeLeft;
 
                 clearInterval(bossTimerInterval);
@@ -1425,7 +1485,7 @@
 
             function endEvent() {
                 activeEvent = null; eventBanner.style.display = "none"; bottomRightNotifier.style.display = "none";
-                healthBar.classList.remove("event-health-bar"); bossTimer.style.display = "none"; clearInterval(bossTimerInterval);
+                healthBar.className = "bar-bg"; bossTimer.style.display = "none"; clearInterval(bossTimerInterval);
                 document.body.style.background = "url('assets/background.png') no-repeat center center fixed"; document.body.style.backgroundSize = "cover";
 
                 rock.src = "assets/rock.png"; 
@@ -1509,15 +1569,14 @@
                                 ${isEquipped ? "مجهّز حالياً ✨" : "تجهيز السكن 👤"}
                             </button>
                         ` : `
-                            <button class="shop-btn" style="background:#9b59b6" id="${btnId}">شراء 💎 ${skin.cost}</button>
+                            <button class="shop-btn" style="background:#9b59b6" id="${btnId}" disabled>سكن سري خاص بالزعماء 🔒</button>
                         `}
                     `;
                     container.appendChild(card);
                     
-                    document.getElementById(btnId).onclick = () => {
-                        if(isOwned) equipSkin(skin.name, skin.file);
-                        else buySkin(skin.name, skin.cost);
-                    };
+                    if (isOwned) {
+                        document.getElementById(btnId).onclick = () => equipSkin(skin.name, skin.file);
+                    }
                 });
             }
 
@@ -1621,6 +1680,18 @@
                 }
 
                 if (activeEvent === 'lucky' && isPlayer) { dmg = Math.floor(dmg * 1.5); }
+
+                // شرط الـ 10% للزعيم الأكبر (الجنج الأكبر):
+                if (activeEvent === 'big_gang_boss') {
+                    let requiredMinDamage = maxHealth * 0.10; // 10% من صحته القصوى الكلية
+                    if (dmg < requiredMinDamage) {
+                        // العمال التلقائيين لن يؤثروا، والضربات الضعيفة ستظهر 0 دمج لمنع قتل الزعيم دون قوة حقيقية
+                        if (isPlayer) {
+                            createFloatingText(pageX, pageY, "🛡️ محمي! (دمجك أقل من 10%)", "red");
+                        }
+                        return; // إلغاء دمج الضربة نهائياً
+                    }
+                }
 
                 createFloatingText(pageX, pageY, (isCrit ? "💥 " : "⛏️ ") + Math.floor(dmg), isCrit ? "gold" : "white");
 
